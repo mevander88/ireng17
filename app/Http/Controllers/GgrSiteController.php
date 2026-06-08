@@ -24,6 +24,7 @@ class GgrSiteController extends Controller
             'miniProviders' => $this->catalog->providers('MN'),
             'sportsProviders' => $this->catalog->providers('SB'),
             'featuredGames' => $popularSlotGames->isNotEmpty() ? $popularSlotGames : $this->catalog->featuredGames(18),
+            'homeBanners' => $this->homeBanners(),
         ]);
     }
 
@@ -66,5 +67,20 @@ class GgrSiteController extends Controller
             $this->catalog->syncProviders();
             $this->catalog->syncGames(null, 6);
         }
+    }
+
+    private function homeBanners(): array
+    {
+        $directory = public_path('assets/images/home-banners');
+
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        return collect(glob($directory . DIRECTORY_SEPARATOR . '*.webp') ?: [])
+            ->sort()
+            ->values()
+            ->map(fn (string $path): string => asset('assets/images/home-banners/' . basename($path)))
+            ->all();
     }
 }

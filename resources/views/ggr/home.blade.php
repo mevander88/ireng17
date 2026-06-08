@@ -62,7 +62,109 @@
         $localBalance = auth()->check()
             ? (float) (\App\Models\Saldo::where('user_id', auth()->id())->value('saldo') ?? 0)
             : 0;
+        $brandName = $setting->nama_web ?? 'ireng17';
     @endphp
+
+    <div class="ggr-home-popup" data-home-popup role="dialog" aria-modal="true" aria-labelledby="homePopupTitle" hidden>
+        <button class="ggr-home-popup-backdrop" type="button" data-home-popup-close aria-label="Tutup popup"></button>
+        <div class="ggr-home-popup-panel" role="document">
+            <button class="ggr-home-popup-close" type="button" data-home-popup-close aria-label="Tutup popup">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <div class="ggr-home-popup-copy">
+                <span class="ggr-kicker">{{ auth()->check() ? 'Lanjutkan Main' : 'Member Baru' }}</span>
+                <h2 id="homePopupTitle">
+                    {{ auth()->check() ? 'Isi saldo, ambil promo, langsung gas dari lobby.' : 'Daftar sebentar, lobby slot populer langsung terbuka.' }}
+                </h2>
+                <p>
+                    @auth
+                        Deposit sekarang untuk lanjut main tanpa pindah halaman. Cek promo aktif dulu agar setiap saldo masuk punya peluang nilai lebih.
+                    @else
+                        Buat akun {{ $brandName }} kurang dari semenit. Setelah login, pilih provider favorit, deposit cepat, lalu mainkan slot dan promo yang sedang aktif.
+                    @endauth
+                </p>
+
+                <div class="ggr-home-popup-tags" aria-label="Keunggulan utama">
+                    <span>Deposit cepat</span>
+                    <span>Provider populer</span>
+                    <span>Promo member</span>
+                </div>
+
+                <div class="ggr-home-popup-actions">
+                    @auth
+                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">
+                            <span class="material-symbols-outlined">add_circle</span>
+                            Deposit Sekarang
+                        </a>
+                        <a class="ggr-btn" href="{{ url('/promotion') }}">Lihat Promo</a>
+                    @else
+                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/register') }}">
+                            <span class="material-symbols-outlined">person_add</span>
+                            Daftar Sekarang
+                        </a>
+                        <a class="ggr-btn" href="{{ url('/login') }}">Login</a>
+                    @endauth
+                </div>
+            </div>
+
+            <div class="ggr-home-popup-art {{ $heroGame?->safe_banner ? '' : 'is-empty' }}">
+                @if ($heroGame?->safe_banner)
+                    <img src="{{ $heroGame->safe_banner }}" alt="{{ $heroGame->game_name }}" loading="eager">
+                    <span>{{ $heroGame->game_name }}</span>
+                @else
+                    <span class="material-symbols-outlined">casino</span>
+                    <strong>Slot Populer</strong>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    @if (!empty($homeBanners))
+        <section class="ggr-home-banner-section" aria-label="Banner promosi utama">
+            <div class="ggr-shell">
+                <div class="ggr-home-slider" data-home-slider>
+                    <div class="ggr-home-slider-track">
+                        @foreach ($homeBanners as $banner)
+                            <article class="ggr-home-slide {{ $loop->first ? 'is-active' : '' }}" data-home-slide>
+                                <img src="{{ $banner }}" alt="Banner promosi {{ $brandName }} {{ $loop->iteration }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                                <div class="ggr-home-slide-copy">
+                                    <span class="ggr-kicker">{{ auth()->check() ? 'Promo Aktif' : 'Gabung Sekarang' }}</span>
+                                    <h2>{{ auth()->check() ? 'Deposit sekarang, lanjutkan peluang menang hari ini.' : 'Daftar cepat, pilih game favorit, mulai dari lobby utama.' }}</h2>
+                                    <p>{{ auth()->check() ? 'Cek promo yang tersedia lalu isi saldo lewat menu deposit.' : 'Akun baru bisa langsung menelusuri provider populer dan menyiapkan deposit pertama.' }}</p>
+                                    <div class="ggr-home-slide-actions">
+                                        @auth
+                                            <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">Deposit</a>
+                                            <a class="ggr-btn" href="{{ url('/promotion') }}">Promo</a>
+                                        @else
+                                            <a class="ggr-btn ggr-btn-primary" href="{{ url('/register') }}">Daftar</a>
+                                            <a class="ggr-btn" href="{{ url('/login') }}">Login</a>
+                                        @endauth
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    @if (count($homeBanners) > 1)
+                        <div class="ggr-home-slider-controls" aria-label="Kontrol banner">
+                            <button type="button" data-home-slider-prev aria-label="Banner sebelumnya">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <div class="ggr-home-slider-dots">
+                                @foreach ($homeBanners as $banner)
+                                    <button type="button" class="{{ $loop->first ? 'is-active' : '' }}" data-home-slider-dot="{{ $loop->index }}" aria-label="Buka banner {{ $loop->iteration }}"></button>
+                                @endforeach
+                            </div>
+                            <button type="button" data-home-slider-next aria-label="Banner berikutnya">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </section>
+    @endif
 
     <section class="ggr-hero">
         <div class="ggr-shell ggr-lobby-grid">
@@ -307,6 +409,90 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const popup = document.querySelector('[data-home-popup]');
+            const closePopupButtons = document.querySelectorAll('[data-home-popup-close]');
+            const previousOverflow = document.body.style.overflow;
+
+            function openHomePopup() {
+                if (!popup) return;
+                popup.hidden = false;
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(function () {
+                    popup.classList.add('is-open');
+                });
+            }
+
+            function closeHomePopup() {
+                if (!popup) return;
+                popup.classList.remove('is-open');
+                document.body.style.overflow = previousOverflow;
+                window.setTimeout(function () {
+                    popup.hidden = true;
+                }, 180);
+            }
+
+            closePopupButtons.forEach(function (button) {
+                button.addEventListener('click', closeHomePopup);
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && popup && !popup.hidden) {
+                    closeHomePopup();
+                }
+            });
+
+            window.setTimeout(openHomePopup, 450);
+
+            const slider = document.querySelector('[data-home-slider]');
+            if (slider) {
+                const slides = Array.from(slider.querySelectorAll('[data-home-slide]'));
+                const dots = Array.from(slider.querySelectorAll('[data-home-slider-dot]'));
+                const prev = slider.querySelector('[data-home-slider-prev]');
+                const next = slider.querySelector('[data-home-slider-next]');
+                let activeSlide = 0;
+                let timer = null;
+
+                function showSlide(index) {
+                    if (!slides.length) return;
+                    activeSlide = (index + slides.length) % slides.length;
+                    slides.forEach(function (slide, slideIndex) {
+                        slide.classList.toggle('is-active', slideIndex === activeSlide);
+                    });
+                    dots.forEach(function (dot, dotIndex) {
+                        dot.classList.toggle('is-active', dotIndex === activeSlide);
+                    });
+                }
+
+                function restartSlider() {
+                    if (timer) {
+                        window.clearInterval(timer);
+                    }
+                    if (slides.length > 1) {
+                        timer = window.setInterval(function () {
+                            showSlide(activeSlide + 1);
+                        }, 5200);
+                    }
+                }
+
+                prev?.addEventListener('click', function () {
+                    showSlide(activeSlide - 1);
+                    restartSlider();
+                });
+                next?.addEventListener('click', function () {
+                    showSlide(activeSlide + 1);
+                    restartSlider();
+                });
+                dots.forEach(function (dot) {
+                    dot.addEventListener('click', function () {
+                        showSlide(Number(dot.dataset.homeSliderDot || 0));
+                        restartSlider();
+                    });
+                });
+
+                showSlide(0);
+                restartSlider();
+            }
+
             const card = document.querySelector('[data-balance-card]');
             if (!card) return;
 
