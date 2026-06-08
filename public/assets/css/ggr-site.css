@@ -332,17 +332,9 @@ img {
 
 .ggr-home-slider-controls {
   position: absolute;
-  right: 18px;
-  bottom: 18px;
+  inset: 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  background: rgba(10, 10, 15, 0.74);
-  padding: 7px;
-  backdrop-filter: blur(14px);
+  pointer-events: none;
 }
 
 .ggr-home-slider-controls button {
@@ -350,23 +342,46 @@ img {
 }
 
 .ggr-home-slider-controls > button {
-  width: 34px;
-  height: 34px;
+  position: absolute;
+  top: 50%;
+  width: clamp(42px, 5vw, 58px);
+  height: clamp(42px, 5vw, 58px);
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
   color: var(--text);
+  pointer-events: auto;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72);
+  transform: translateY(-50%);
 }
 
-.ggr-home-slider-controls > button:hover {
-  background: rgba(255, 198, 64, 0.18);
+.ggr-home-slider-controls > button:first-child {
+  left: clamp(10px, 2.2vw, 26px);
+}
+
+.ggr-home-slider-controls > button:last-child {
+  right: clamp(10px, 2.2vw, 26px);
+}
+
+.ggr-home-slider-controls > button:hover,
+.ggr-home-slider-controls > button:focus-visible {
+  background: transparent;
   color: var(--gold-soft);
 }
 
+.ggr-home-slider-controls > button .material-symbols-outlined {
+  font-size: clamp(34px, 4.6vw, 52px);
+}
+
 .ggr-home-slider-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
   display: flex;
   gap: 6px;
+  pointer-events: auto;
+  transform: translateX(-50%);
 }
 
 .ggr-home-slider-dots button {
@@ -2581,13 +2596,6 @@ body.ggr-sidebar-open {
 
   .ggr-home-page .ggr-main {
     padding-top: 70px;
-  }
-
-  .ggr-home-slider-controls {
-    right: 14px;
-    bottom: 14px;
-    left: 14px;
-    justify-content: space-between;
   }
 
   .ggr-home-popup-panel {
