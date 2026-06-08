@@ -312,14 +312,12 @@ img {
   align-items: end;
   opacity: 0;
   pointer-events: none;
-  transform: scale(1.012);
-  transition: opacity 420ms ease, transform 620ms ease;
+  transition: opacity 420ms ease;
 }
 
 .ggr-home-slide.is-active {
   opacity: 1;
   pointer-events: auto;
-  transform: scale(1);
 }
 
 .ggr-home-slide img {
