@@ -2651,8 +2651,18 @@ body.ggr-sidebar-open {
     display: none;
   }
 
-  .ggr-nav-actions .ggr-btn:not(.ggr-btn-primary) {
+  .ggr-nav-actions .ggr-btn:not(.ggr-btn-primary):not(.ggr-nav-login),
+  .ggr-nav-actions .ggr-nav-register {
     display: none;
+  }
+
+  .ggr-nav-actions .ggr-nav-login {
+    min-width: 82px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-color: rgba(255, 223, 159, 0.45);
+    background: rgba(255, 223, 159, 0.1);
+    color: var(--gold);
   }
 
   .ggr-main {
@@ -2811,6 +2821,15 @@ body.ggr-sidebar-open {
     content: "add_circle";
     font-family: "Material Symbols Outlined";
     font-size: 22px;
+  }
+
+  .ggr-nav-actions .ggr-nav-login {
+    width: auto;
+    font-size: 13px;
+  }
+
+  .ggr-nav-actions .ggr-nav-login::before {
+    content: none;
   }
 
   .ggr-balance-actions {

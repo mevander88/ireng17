@@ -96,11 +96,11 @@
                         Deposit
                     </a>
                 @else
-                    <a class="ggr-btn" href="{{ url('/login') }}">
+                    <a class="ggr-btn ggr-nav-login" href="{{ url('/login') }}">
                         <span class="material-symbols-outlined">login</span>
                         Login
                     </a>
-                    <a class="ggr-btn ggr-btn-primary" href="{{ url('/register') }}">
+                    <a class="ggr-btn ggr-btn-primary ggr-nav-register" href="{{ url('/register') }}">
                         <span class="material-symbols-outlined">person_add</span>
                         Daftar
                     </a>
