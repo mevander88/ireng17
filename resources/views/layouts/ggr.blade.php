@@ -65,7 +65,7 @@
     </script>
     @stack('head')
 </head>
-<body>
+<body class="{{ $isHomePage ? 'ggr-home-page' : '' }}">
     <header class="ggr-topbar">
         <div class="ggr-shell ggr-nav">
             <button class="ggr-icon-btn" type="button" data-sidebar-open aria-label="Buka sidebar" aria-expanded="false">

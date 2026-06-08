@@ -110,45 +110,31 @@
 
     <section class="ggr-hero">
         @if (!empty($homeBanners))
-            <div class="ggr-shell">
+            <div class="ggr-home-hero-frame">
                 <div class="ggr-home-slider" data-home-slider aria-label="Hero banner promosi utama">
                     <div class="ggr-home-slider-track">
-                        @foreach ($homeBanners as $banner)
-                            <article class="ggr-home-slide {{ $loop->first ? 'is-active' : '' }}" data-home-slide>
-                                <img src="{{ $banner }}" alt="Banner promosi {{ $brandName }} {{ $loop->iteration }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
-                                <div class="ggr-home-slide-copy">
-                                    <span class="ggr-kicker">{{ auth()->check() ? 'Promo Aktif' : 'Gabung Sekarang' }}</span>
-                                    <h2>{{ auth()->check() ? 'Deposit sekarang, lanjutkan peluang menang hari ini.' : 'Daftar cepat, pilih game favorit, mulai dari lobby utama.' }}</h2>
-                                    <p>{{ auth()->check() ? 'Cek promo yang tersedia lalu isi saldo lewat menu deposit.' : 'Akun baru bisa langsung menelusuri provider populer dan menyiapkan deposit pertama.' }}</p>
-                                    <div class="ggr-home-slide-actions">
-                                        @auth
-                                            <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">Deposit</a>
-                                            <a class="ggr-btn" href="{{ url('/promotion') }}">Promo</a>
-                                        @else
-                                            <a class="ggr-btn ggr-btn-primary" href="{{ url('/register') }}">Daftar</a>
-                                            <a class="ggr-btn" href="{{ url('/login') }}">Login</a>
-                                        @endauth
-                                    </div>
-                                </div>
-                            </article>
-                        @endforeach
+                    @foreach ($homeBanners as $banner)
+                        <article class="ggr-home-slide {{ $loop->first ? 'is-active' : '' }}" data-home-slide>
+                            <img src="{{ $banner }}" alt="Banner promosi {{ $brandName }} {{ $loop->iteration }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                        </article>
+                    @endforeach
                     </div>
 
-                    @if (count($homeBanners) > 1)
-                        <div class="ggr-home-slider-controls" aria-label="Kontrol banner">
-                            <button type="button" data-home-slider-prev aria-label="Banner sebelumnya">
-                                <span class="material-symbols-outlined">chevron_left</span>
-                            </button>
-                            <div class="ggr-home-slider-dots">
-                                @foreach ($homeBanners as $banner)
-                                    <button type="button" class="{{ $loop->first ? 'is-active' : '' }}" data-home-slider-dot="{{ $loop->index }}" aria-label="Buka banner {{ $loop->iteration }}"></button>
-                                @endforeach
-                            </div>
-                            <button type="button" data-home-slider-next aria-label="Banner berikutnya">
-                                <span class="material-symbols-outlined">chevron_right</span>
-                            </button>
+                @if (count($homeBanners) > 1)
+                    <div class="ggr-home-slider-controls" aria-label="Kontrol banner">
+                        <button type="button" data-home-slider-prev aria-label="Banner sebelumnya">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <div class="ggr-home-slider-dots">
+                            @foreach ($homeBanners as $banner)
+                                <button type="button" class="{{ $loop->first ? 'is-active' : '' }}" data-home-slider-dot="{{ $loop->index }}" aria-label="Buka banner {{ $loop->iteration }}"></button>
+                            @endforeach
                         </div>
-                    @endif
+                        <button type="button" data-home-slider-next aria-label="Banner berikutnya">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                @endif
                 </div>
             </div>
         @endif
