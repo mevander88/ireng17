@@ -168,6 +168,8 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 22px;
   background:
+    radial-gradient(circle at 8% 0, rgba(255, 198, 64, 0.12), transparent 22rem),
+    radial-gradient(circle at 100% 0, rgba(208, 188, 255, 0.1), transparent 20rem),
     linear-gradient(140deg, rgba(30, 32, 33, 0.98), rgba(12, 12, 18, 0.98) 58%, rgba(34, 25, 12, 0.98)),
     var(--surface);
   box-shadow: 0 32px 90px rgba(0, 0, 0, 0.5);
@@ -189,15 +191,24 @@ img {
   height: 42px;
   display: grid;
   place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
+  background: rgba(11, 11, 16, 0.72);
+  color: #fff9ed;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
   cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
 }
 
 .ggr-home-popup-close:hover {
   background: rgba(255, 198, 64, 0.16);
   color: var(--gold-soft);
+  border-color: rgba(255, 223, 159, 0.36);
+  transform: translateY(-1px);
+}
+
+.ggr-home-popup-close .material-symbols-outlined {
+  font-size: 22px;
 }
 
 .ggr-home-popup-copy {
@@ -220,9 +231,15 @@ img {
 .ggr-home-popup-copy p {
   max-width: 590px;
   margin: 0;
-  color: var(--muted);
+  color: rgba(245, 239, 225, 0.78);
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 1.72;
+}
+
+.ggr-home-popup-note {
+  display: grid;
+  gap: 12px;
+  max-width: 610px;
 }
 
 .ggr-home-popup-art {
@@ -2624,10 +2641,11 @@ body.ggr-sidebar-open {
 @media (max-width: 699.98px) {
   .ggr-home-popup-panel {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .ggr-home-popup-copy {
-    padding-right: 38px;
+    padding-right: 0;
   }
 
   .ggr-home-popup-art {
@@ -2771,7 +2789,7 @@ body.ggr-sidebar-open {
   .ggr-home-popup {
     align-items: center;
     justify-items: center;
-    padding: 12px;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
   }
 
   .ggr-home-page .ggr-main {
@@ -2779,10 +2797,21 @@ body.ggr-sidebar-open {
   }
 
   .ggr-home-popup-panel {
+    width: min(100%, 390px);
     max-height: calc(100dvh - 24px);
     overflow-y: auto;
-    border-radius: 18px;
-    padding: 22px;
+    border-radius: 20px;
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .ggr-home-popup-close {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background: rgba(7, 7, 10, 0.82);
+    color: #fff9ed;
   }
 
   .ggr-home-popup-copy {
@@ -2790,16 +2819,31 @@ body.ggr-sidebar-open {
     padding-right: 0;
     text-align: center;
     justify-items: center;
+    gap: 10px;
   }
 
   .ggr-home-popup-copy h2 {
-    font-size: clamp(27px, 10vw, 38px);
+    font-size: clamp(29px, 10vw, 40px);
+    line-height: 1;
+  }
+
+  .ggr-home-popup-copy p {
+    max-width: 34ch;
+    font-size: 14px;
+    line-height: 1.62;
+  }
+
+  .ggr-home-popup-note {
+    gap: 9px;
+    justify-items: center;
   }
 
   .ggr-home-popup-art {
     order: 1;
     width: 100%;
-    min-height: 170px;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
   }
 
   .ggr-shell {

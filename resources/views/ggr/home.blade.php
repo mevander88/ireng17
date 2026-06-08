@@ -77,7 +77,17 @@
                 <h2 id="homePopupTitle">
                     IRENG17
                 </h2>
-                <p>{{ auth()->check() ? 'Promo sedang aktif. Isi saldo sekarang dan lanjutkan permainan favorit Anda.' : 'Daftar, klaim promo member baru, lalu isi saldo untuk mulai main di provider pilihan.' }}</p>
+                @auth
+                    <div class="ggr-home-popup-note">
+                        <p>Saldo adalah kunci buat lanjut lebih nyaman di lobby IRENG17. Cek promo yang sedang aktif, pilih nominal deposit yang pas, lalu lanjutkan game favorit tanpa ribet pindah halaman.</p>
+                        <p>Kalau putaran belum sesuai harapan, jangan kejar rugi. Atur batas main, isi saldo secukupnya, dan manfaatkan promo hanya saat memang sesuai rencana bermain Anda.</p>
+                    </div>
+                @else
+                    <div class="ggr-home-popup-note">
+                        <p>Gabung di IRENG17 dan mulai dari lobby yang sudah dirapikan untuk slot populer, provider pilihan, promo member, dan deposit cepat dalam satu alur yang ringan.</p>
+                        <p>Kalau nanti saldo terasa kurang setelah bermain, isi ulang secukupnya sesuai batas Anda. Main lebih enak saat nominal deposit terkontrol, promo dicek dulu, dan pilihan game sudah siap dari awal.</p>
+                    </div>
+                @endauth
             </div>
 
             <div class="ggr-home-popup-art {{ $heroGame?->safe_banner ? '' : 'is-empty' }}">
