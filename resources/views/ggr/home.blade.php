@@ -73,27 +73,11 @@
             </button>
 
             <div class="ggr-home-popup-copy">
-                <span class="ggr-kicker">{{ auth()->check() ? 'Saldo Main' : 'Member Baru' }}</span>
+                <span class="ggr-kicker">{{ auth()->check() ? 'Promo Aktif' : 'Member Baru' }}</span>
                 <h2 id="homePopupTitle">
-                    {{ auth()->check() ? 'Deposit dan lanjut main.' : 'Daftar dan mulai main.' }}
+                    IRENG17
                 </h2>
-                <p>{{ auth()->check() ? 'Cek promo aktif sebelum isi saldo.' : 'Akun baru langsung akses lobby dan promo.' }}</p>
-
-                <div class="ggr-home-popup-actions">
-                    @auth
-                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">
-                            <span class="material-symbols-outlined">add_circle</span>
-                            Deposit
-                        </a>
-                        <a class="ggr-btn" href="{{ url('/promotion') }}">Promo</a>
-                    @else
-                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/register') }}">
-                            <span class="material-symbols-outlined">person_add</span>
-                            Daftar
-                        </a>
-                        <a class="ggr-btn" href="{{ url('/login') }}">Login</a>
-                    @endauth
-                </div>
+                <p>{{ auth()->check() ? 'Promo sedang aktif. Isi saldo sekarang dan lanjutkan permainan favorit Anda.' : 'Daftar, klaim promo member baru, lalu isi saldo untuk mulai main di provider pilihan.' }}</p>
             </div>
 
             <div class="ggr-home-popup-art {{ $heroGame?->safe_banner ? '' : 'is-empty' }}">
@@ -169,11 +153,11 @@
                             Tarik Dana
                         </a>
                     @else
-                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/login') }}">
+                        <a class="ggr-btn ggr-btn-primary ggr-home-entry-btn" href="{{ url('/login') }}">
                             <span class="material-symbols-outlined">login</span>
                             Login
                         </a>
-                        <a class="ggr-btn" href="{{ url('/register') }}">
+                        <a class="ggr-btn ggr-home-entry-btn" href="{{ url('/register') }}">
                             <span class="material-symbols-outlined">person_add</span>
                             Daftar
                         </a>

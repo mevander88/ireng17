@@ -225,13 +225,6 @@ img {
   line-height: 1.75;
 }
 
-.ggr-home-popup-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 4px;
-}
-
 .ggr-home-popup-art {
   min-height: 360px;
   position: relative;
@@ -279,6 +272,62 @@ img {
 
 .ggr-home-popup-art.is-empty .material-symbols-outlined {
   font-size: 70px;
+}
+
+.ggr-home-entry-btn {
+  position: relative;
+  overflow: hidden;
+  animation: ggr-home-cta-breathe 2.8s ease-in-out infinite;
+}
+
+.ggr-home-entry-btn:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+.ggr-home-entry-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.22) 42%, transparent 68%);
+  opacity: 0;
+  transform: translateX(-120%);
+  animation: ggr-home-cta-shine 3.2s ease-in-out infinite;
+}
+
+.ggr-home-entry-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes ggr-home-cta-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 rgba(255, 198, 64, 0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(255, 198, 64, 0.16);
+  }
+}
+
+@keyframes ggr-home-cta-shine {
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+
+  54% {
+    opacity: 1;
+  }
+
+  72%,
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
 }
 
 .ggr-home-slider {
@@ -2591,7 +2640,8 @@ body.ggr-sidebar-open {
 
 @media (max-width: 599.98px) {
   .ggr-home-popup {
-    align-items: end;
+    align-items: center;
+    justify-items: center;
     padding: 12px;
   }
 
@@ -2607,24 +2657,19 @@ body.ggr-sidebar-open {
   }
 
   .ggr-home-popup-copy {
-    padding-right: 32px;
+    order: 2;
+    padding-right: 0;
+    text-align: center;
+    justify-items: center;
   }
 
   .ggr-home-popup-copy h2 {
     font-size: clamp(27px, 10vw, 38px);
   }
 
-  .ggr-home-popup-actions .ggr-btn {
-    min-width: 132px;
-    flex: 0 1 132px;
-    justify-content: center;
-  }
-
-  .ggr-home-popup-actions {
-    justify-content: center;
-  }
-
   .ggr-home-popup-art {
+    order: 1;
+    width: 100%;
     min-height: 170px;
   }
 
