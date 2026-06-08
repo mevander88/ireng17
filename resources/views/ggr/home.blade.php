@@ -120,10 +120,10 @@
         </div>
     </div>
 
-    @if (!empty($homeBanners))
-        <section class="ggr-home-banner-section" aria-label="Banner promosi utama">
+    <section class="ggr-hero">
+        @if (!empty($homeBanners))
             <div class="ggr-shell">
-                <div class="ggr-home-slider" data-home-slider>
+                <div class="ggr-home-slider" data-home-slider aria-label="Hero banner promosi utama">
                     <div class="ggr-home-slider-track">
                         @foreach ($homeBanners as $banner)
                             <article class="ggr-home-slide {{ $loop->first ? 'is-active' : '' }}" data-home-slide>
@@ -163,10 +163,8 @@
                     @endif
                 </div>
             </div>
-        </section>
-    @endif
+        @endif
 
-    <section class="ggr-hero">
         <div class="ggr-shell ggr-lobby-grid">
             <div class="ggr-balance-card" data-balance-card data-authenticated="{{ auth()->check() ? '1' : '0' }}">
                 <div class="ggr-balance-row">

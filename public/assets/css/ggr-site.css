@@ -300,12 +300,12 @@ img {
   font-size: 70px;
 }
 
-.ggr-home-banner-section {
-  padding: clamp(12px, 2vw, 24px) 0 0;
-}
-
 .ggr-home-slider {
   position: relative;
+}
+
+.ggr-hero .ggr-home-slider {
+  margin-bottom: clamp(16px, 3vw, 28px);
 }
 
 .ggr-home-slider-track {
@@ -2641,10 +2641,6 @@ body.ggr-sidebar-open {
   .ggr-home-popup {
     align-items: end;
     padding: 12px;
-  }
-
-  .ggr-home-banner-section {
-    padding-top: 8px;
   }
 
   .ggr-home-slider-track {
