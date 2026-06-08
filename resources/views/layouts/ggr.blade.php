@@ -77,7 +77,7 @@
                 <span class="ggr-brand-mark">I</span>
                 <span>{{ strtoupper($setting->nama_web ?? 'ireng17') }}</span>
             </a>
-            <nav class="ggr-nav-actions" aria-label="Navigasi utama">
+            <nav class="ggr-nav-actions @auth is-auth @else is-guest @endauth" aria-label="Navigasi utama">
                 <a class="ggr-btn" href="{{ url('/slots') }}">
                     <span class="material-symbols-outlined">grid_view</span>
                     Provider
@@ -98,11 +98,11 @@
                 @else
                     <a class="ggr-btn ggr-nav-login" href="{{ url('/login') }}">
                         <span class="material-symbols-outlined">login</span>
-                        Login
+                        <span class="ggr-nav-label">Login</span>
                     </a>
                     <a class="ggr-btn ggr-btn-primary ggr-nav-register" href="{{ url('/register') }}">
                         <span class="material-symbols-outlined">person_add</span>
-                        Daftar
+                        <span class="ggr-nav-label">Daftar</span>
                     </a>
                 @endauth
             </nav>

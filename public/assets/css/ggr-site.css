@@ -2650,7 +2650,8 @@ body.ggr-sidebar-open {
   }
 
   .ggr-nav {
-    grid-template-columns: 44px 1fr auto;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 10px;
   }
 
   .ggr-brand {
@@ -2662,21 +2663,42 @@ body.ggr-sidebar-open {
     display: none;
   }
 
-  .ggr-nav-actions .ggr-btn:not(.ggr-btn-primary):not(.ggr-nav-login),
-  .ggr-nav-actions .ggr-nav-register {
+  .ggr-nav-actions {
+    justify-self: end;
+    width: 44px;
+    min-width: 44px;
+    justify-content: flex-end;
+    gap: 0;
+  }
+
+  .ggr-nav-actions.is-guest .ggr-btn,
+  .ggr-nav-actions.is-auth .ggr-btn:not(.ggr-btn-primary) {
     display: none;
   }
 
-  .ggr-nav-actions .ggr-nav-login {
+  .ggr-nav-actions.is-guest .ggr-nav-login,
+  .ggr-nav-actions.is-auth .ggr-btn-primary {
+    display: inline-flex;
     width: 44px;
     min-width: 44px;
+    max-width: 44px;
     min-height: 44px;
     padding: 0;
     gap: 0;
+    overflow: hidden;
     border-color: rgba(255, 223, 159, 0.45);
     background: rgba(255, 223, 159, 0.1);
     color: var(--gold);
-    font-size: 0;
+  }
+
+  .ggr-nav-actions.is-auth .ggr-btn-primary {
+    border-color: rgba(255, 223, 159, 0.75);
+    background: linear-gradient(135deg, var(--gold), var(--gold-soft), var(--gold));
+    color: #261a00;
+  }
+
+  .ggr-nav-actions .ggr-nav-label {
+    display: none;
   }
 
   .ggr-nav-actions .ggr-nav-login .material-symbols-outlined {
@@ -2862,20 +2884,19 @@ body.ggr-sidebar-open {
 
   .ggr-nav-actions .ggr-btn-primary {
     width: 44px;
+    min-width: 44px;
+    max-width: 44px;
     padding: 0;
-    font-size: 0;
+    gap: 0;
   }
 
   .ggr-nav-actions .ggr-btn-primary::before {
-    content: "add_circle";
-    font-family: "Material Symbols Outlined";
-    font-size: 22px;
+    content: none;
   }
 
   .ggr-nav-actions .ggr-nav-login {
     width: 44px;
     min-width: 44px;
-    font-size: 0;
   }
 
   .ggr-nav-actions .ggr-nav-login::before {
