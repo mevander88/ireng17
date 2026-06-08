@@ -2,6 +2,8 @@
 use App\Models\Setting;
 
 $setting = Setting::first();
+$adminCssPath = public_path('Admin/css/ireng-admin.css');
+$adminCssVersion = is_file($adminCssPath) ? filemtime($adminCssPath) : time();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,13 +52,13 @@ $setting = Setting::first();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Montserrat:wght@700;800&display=swap">
-    <link rel="stylesheet" href="{{ asset('Admin/css/ireng-admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('Admin/css/ireng-admin.css') }}?v={{ $adminCssVersion }}">
     <link rel="icon" href="{{ !empty($setting?->logo) ? asset('storage/' . $setting->logo) : asset('assets/images/provider-covers/spribe-aviator.svg') }}" type="image/svg+xml">
 
 
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed ireng-admin-dark">
     <div class="wrapper">
 
         @include('backoffice.layouts.navbar')
