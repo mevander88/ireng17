@@ -17,6 +17,8 @@
         $isHomePage = request()->getPathInfo() === '/';
         $siteCssPath = public_path('assets/css/ggr-site.css');
         $siteCssVersion = is_file($siteCssPath) ? filemtime($siteCssPath) : time();
+        $faviconPath = public_path('favicon.ico');
+        $faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
         $siteSchema = [
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
@@ -60,7 +62,10 @@
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ $seoImage }}">
-    <link rel="icon" href="{{ asset('assets/images/provider-covers/spribe-aviator.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ $faviconVersion }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}?v={{ $faviconVersion }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon-16x16.png') }}?v={{ $faviconVersion }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ $faviconVersion }}">
     <link rel="stylesheet" href="{{ asset('assets/css/ggr-site.css') }}?v={{ $siteCssVersion }}">
     <script type="application/ld+json">
         @json($siteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)

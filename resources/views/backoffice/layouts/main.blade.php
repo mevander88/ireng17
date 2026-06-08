@@ -4,6 +4,8 @@ use App\Models\Setting;
 $setting = Setting::first();
 $adminCssPath = public_path('Admin/css/ireng-admin.css');
 $adminCssVersion = is_file($adminCssPath) ? filemtime($adminCssPath) : time();
+$faviconPath = public_path('favicon.ico');
+$faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +55,10 @@ $adminCssVersion = is_file($adminCssPath) ? filemtime($adminCssPath) : time();
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Montserrat:wght@700;800&display=swap">
     <link rel="stylesheet" href="{{ asset('Admin/css/ireng-admin.css') }}?v={{ $adminCssVersion }}">
-    <link rel="icon" href="{{ !empty($setting?->logo) ? asset('storage/' . $setting->logo) : asset('assets/images/provider-covers/spribe-aviator.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ $faviconVersion }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}?v={{ $faviconVersion }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon-16x16.png') }}?v={{ $faviconVersion }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ $faviconVersion }}">
 
 
 </head>
