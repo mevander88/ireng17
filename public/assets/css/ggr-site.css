@@ -461,6 +461,128 @@ img {
   -webkit-backdrop-filter: blur(18px);
 }
 
+:where(
+  .ggr-balance-card,
+  .ggr-feature-card,
+  .ggr-category-card,
+  .ggr-provider-card,
+  .ggr-game-card,
+  .ggr-promo-card,
+  .ggr-member-promo-card,
+  .ggr-stat-card,
+  .ggr-table-card,
+  .ggr-method-card,
+  .ggr-payment-card,
+  .ggr-auth-card,
+  .ggr-account-panel,
+  .ggr-seo-panel,
+  .ggr-seo-grid article
+) {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease;
+}
+
+:where(
+  .ggr-balance-card,
+  .ggr-feature-card,
+  .ggr-category-card,
+  .ggr-provider-card,
+  .ggr-game-card,
+  .ggr-promo-card,
+  .ggr-member-promo-card,
+  .ggr-stat-card,
+  .ggr-table-card,
+  .ggr-method-card,
+  .ggr-payment-card,
+  .ggr-auth-card,
+  .ggr-account-panel,
+  .ggr-seo-panel,
+  .ggr-seo-grid article
+)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 18% 0, rgba(255, 198, 64, 0.14), transparent 34%),
+    radial-gradient(circle at 100% 20%, rgba(208, 188, 255, 0.14), transparent 36%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(
+    .ggr-balance-card,
+    .ggr-feature-card,
+    .ggr-category-card,
+    .ggr-provider-card,
+    .ggr-game-card,
+    .ggr-promo-card,
+    .ggr-member-promo-card,
+    .ggr-stat-card,
+    .ggr-table-card,
+    .ggr-method-card:not(.is-disabled),
+    .ggr-payment-card:not(.is-disabled),
+    .ggr-auth-card,
+    .ggr-account-panel,
+    .ggr-seo-panel,
+    .ggr-seo-grid article
+  ):hover {
+    border-color: rgba(255, 223, 159, 0.28);
+    box-shadow: 0 24px 62px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(255, 223, 159, 0.08);
+    transform: translateY(-4px);
+  }
+
+  :where(
+    .ggr-balance-card,
+    .ggr-feature-card,
+    .ggr-category-card,
+    .ggr-provider-card,
+    .ggr-game-card,
+    .ggr-promo-card,
+    .ggr-member-promo-card,
+    .ggr-stat-card,
+    .ggr-table-card,
+    .ggr-method-card:not(.is-disabled),
+    .ggr-payment-card:not(.is-disabled),
+    .ggr-auth-card,
+    .ggr-account-panel,
+    .ggr-seo-panel,
+    .ggr-seo-grid article
+  ):hover::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .ggr-balance-card,
+    .ggr-feature-card,
+    .ggr-category-card,
+    .ggr-provider-card,
+    .ggr-game-card,
+    .ggr-promo-card,
+    .ggr-member-promo-card,
+    .ggr-stat-card,
+    .ggr-table-card,
+    .ggr-method-card,
+    .ggr-payment-card,
+    .ggr-auth-card,
+    .ggr-account-panel,
+    .ggr-seo-panel,
+    .ggr-seo-grid article
+  ) {
+    transition: none;
+  }
+}
+
 .ggr-topbar {
   position: fixed;
   inset: 0 0 auto;
@@ -541,10 +663,7 @@ img {
 }
 
 .ggr-btn:hover,
-.ggr-btn:focus-visible,
-.ggr-game-card:hover,
-.ggr-provider-card:hover,
-.ggr-category-card:hover {
+.ggr-btn:focus-visible {
   transform: translateY(-2px);
 }
 

@@ -4570,3 +4570,25 @@ button[type="submit"] i {
 .uploads {
   line-height: 15px !important;
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .card,
+  .small-box,
+  .info-box,
+  .ggr-admin-panel {
+    transition:
+      transform 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease,
+      background 220ms ease !important;
+  }
+
+  .card:hover,
+  .small-box:hover,
+  .info-box:hover,
+  .ggr-admin-panel:hover {
+    border-color: rgba(255, 223, 159, 0.3) !important;
+    box-shadow: 0 24px 62px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(255, 223, 159, 0.08) !important;
+    transform: translateY(-4px);
+  }
+}
