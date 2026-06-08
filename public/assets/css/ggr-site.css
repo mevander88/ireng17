@@ -225,25 +225,6 @@ img {
   line-height: 1.75;
 }
 
-.ggr-home-popup-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.ggr-home-popup-tags span {
-  min-height: 32px;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--gold-soft);
-  padding: 0 11px;
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .ggr-home-popup-actions {
   display: flex;
   flex-wrap: wrap;

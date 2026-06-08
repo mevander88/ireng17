@@ -73,35 +73,23 @@
             </button>
 
             <div class="ggr-home-popup-copy">
-                <span class="ggr-kicker">{{ auth()->check() ? 'Lanjutkan Main' : 'Member Baru' }}</span>
+                <span class="ggr-kicker">{{ auth()->check() ? 'Saldo Main' : 'Member Baru' }}</span>
                 <h2 id="homePopupTitle">
-                    {{ auth()->check() ? 'Isi saldo, ambil promo, langsung gas dari lobby.' : 'Daftar sebentar, lobby slot populer langsung terbuka.' }}
+                    {{ auth()->check() ? 'Deposit dan lanjut main.' : 'Daftar dan mulai main.' }}
                 </h2>
-                <p>
-                    @auth
-                        Deposit sekarang untuk lanjut main tanpa pindah halaman. Cek promo aktif dulu agar setiap saldo masuk punya peluang nilai lebih.
-                    @else
-                        Buat akun {{ $brandName }} kurang dari semenit. Setelah login, pilih provider favorit, deposit cepat, lalu mainkan slot dan promo yang sedang aktif.
-                    @endauth
-                </p>
-
-                <div class="ggr-home-popup-tags" aria-label="Keunggulan utama">
-                    <span>Deposit cepat</span>
-                    <span>Provider populer</span>
-                    <span>Promo member</span>
-                </div>
+                <p>{{ auth()->check() ? 'Cek promo aktif sebelum isi saldo.' : 'Akun baru langsung akses lobby dan promo.' }}</p>
 
                 <div class="ggr-home-popup-actions">
                     @auth
                         <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">
                             <span class="material-symbols-outlined">add_circle</span>
-                            Deposit Sekarang
+                            Deposit
                         </a>
-                        <a class="ggr-btn" href="{{ url('/promotion') }}">Lihat Promo</a>
+                        <a class="ggr-btn" href="{{ url('/promotion') }}">Promo</a>
                     @else
                         <a class="ggr-btn ggr-btn-primary" href="{{ url('/register') }}">
                             <span class="material-symbols-outlined">person_add</span>
-                            Daftar Sekarang
+                            Daftar
                         </a>
                         <a class="ggr-btn" href="{{ url('/login') }}">Login</a>
                     @endauth
