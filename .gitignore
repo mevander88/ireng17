@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /public/.well-known/
+/bootstrap/cache/*.php
 /storage/*.key
 /storage/app/*.pem
 /vendor

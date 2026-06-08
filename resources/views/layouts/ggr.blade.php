@@ -230,10 +230,17 @@
             <span class="material-symbols-outlined">local_offer</span>
             Promo
         </a>
-        <a class="{{ request()->is('profile') ? 'is-active' : '' }}" href="{{ url('/profile') }}">
-            <span class="material-symbols-outlined">person</span>
-            Profil
-        </a>
+        @auth
+            <a class="{{ request()->is('profile') ? 'is-active' : '' }}" href="{{ url('/profile') }}">
+                <span class="material-symbols-outlined">person</span>
+                Profil
+            </a>
+        @else
+            <a class="{{ request()->is('login') ? 'is-active' : '' }}" href="{{ url('/login') }}">
+                <span class="material-symbols-outlined">login</span>
+                Login
+            </a>
+        @endauth
     </nav>
 
     <footer class="ggr-footer">

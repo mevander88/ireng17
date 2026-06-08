@@ -179,7 +179,7 @@ Route::get('/username_phone', function (Request $request) {
     ]);
 });
 Route::get('/admins', [AdminLoginController::class, 'index']);
-Route::POST('/admins/login', [AdminLoginController::class, 'auth'])->name('login');
+Route::POST('/admins/login', [AdminLoginController::class, 'auth'])->name('admin.login');
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'admin'], function () {
         Route::get('/get-balance', [BackofficeController::class, 'agentbalance']);

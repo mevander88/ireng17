@@ -85,14 +85,25 @@
                     {{ auth()->check() ? 'Saldo siap diperbarui.' : 'Login untuk melihat saldo akun.' }}
                 </p>
                 <div class="ggr-balance-actions">
-                    <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">
-                        <span class="material-symbols-outlined">add_circle</span>
-                        Deposit
-                    </a>
-                    <a class="ggr-btn" href="{{ url('/account/withdrawal') }}">
-                        <span class="material-symbols-outlined">account_balance_wallet</span>
-                        Tarik Dana
-                    </a>
+                    @auth
+                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">
+                            <span class="material-symbols-outlined">add_circle</span>
+                            Deposit
+                        </a>
+                        <a class="ggr-btn" href="{{ url('/account/withdrawal') }}">
+                            <span class="material-symbols-outlined">account_balance_wallet</span>
+                            Tarik Dana
+                        </a>
+                    @else
+                        <a class="ggr-btn ggr-btn-primary" href="{{ url('/login') }}">
+                            <span class="material-symbols-outlined">login</span>
+                            Login
+                        </a>
+                        <a class="ggr-btn" href="{{ url('/register') }}">
+                            <span class="material-symbols-outlined">person_add</span>
+                            Daftar
+                        </a>
+                    @endauth
                 </div>
             </div>
 
