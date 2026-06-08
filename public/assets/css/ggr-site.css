@@ -301,7 +301,7 @@ img {
   height: clamp(180px, 49.3vw, 560px);
   overflow: hidden;
   border-radius: 0;
-  background: var(--surface-low);
+  background: #050507;
   box-shadow: none;
 }
 
@@ -325,7 +325,7 @@ img {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .ggr-home-slider-controls {
