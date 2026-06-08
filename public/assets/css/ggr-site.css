@@ -2606,7 +2606,12 @@ body.ggr-sidebar-open {
   }
 
   .ggr-home-popup-actions .ggr-btn {
-    flex: 1 1 100%;
+    min-width: 132px;
+    flex: 0 1 132px;
+    justify-content: center;
+  }
+
+  .ggr-home-popup-actions {
     justify-content: center;
   }
 
