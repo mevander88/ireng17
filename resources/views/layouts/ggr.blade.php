@@ -15,6 +15,8 @@
         $canonicalUrl = url()->current();
         $ampUrl = config('app.amp_url') ?: url('/amp.html');
         $isHomePage = request()->getPathInfo() === '/';
+        $siteCssPath = public_path('assets/css/ggr-site.css');
+        $siteCssVersion = is_file($siteCssPath) ? filemtime($siteCssPath) : time();
         $siteSchema = [
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
@@ -59,7 +61,7 @@
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ $seoImage }}">
     <link rel="icon" href="{{ asset('assets/images/provider-covers/spribe-aviator.svg') }}" type="image/svg+xml">
-    <link rel="stylesheet" href="{{ asset('assets/css/ggr-site.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/ggr-site.css') }}?v={{ $siteCssVersion }}">
     <script type="application/ld+json">
         @json($siteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
     </script>
