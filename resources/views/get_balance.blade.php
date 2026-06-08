@@ -1,1 +1,0 @@
-<pre style="word-wrap: break-word; white-space: pre-wrap;">{"data":"IDR 0.00"}</pre>

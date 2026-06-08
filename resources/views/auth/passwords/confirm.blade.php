@@ -1,49 +1,42 @@
-@extends('layouts.app')
+@extends('layouts.ggr')
+
+@section('title', 'Konfirmasi Password')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Confirm Password') }}</div>
-
-                <div class="card-body">
-                    {{ __('Please confirm your password before continuing.') }}
-
-                    <form method="POST" action="{{ route('password.confirm') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Confirm Password') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
-                </div>
+    <section class="ggr-section ggr-auth-section">
+        <div class="ggr-auth-shell">
+            <div class="ggr-auth-copy">
+                <span class="ggr-eyebrow">Akun ireng17</span>
+                <h1>Konfirmasi password</h1>
+                <p>Masukkan password untuk melanjutkan akses ke area aman.</p>
             </div>
+
+            <form class="ggr-account-panel ggr-auth-card" method="POST" action="{{ route('password.confirm') }}">
+                @csrf
+
+                <div class="ggr-section-heading">
+                    <div>
+                        <span class="ggr-eyebrow">Keamanan</span>
+                        <h2>Verifikasi Akses</h2>
+                    </div>
+                </div>
+
+                @error('password')
+                    <div class="ggr-alert is-danger">{{ $message }}</div>
+                @enderror
+
+                <label>
+                    Password
+                    <input type="password" name="password" required autocomplete="current-password">
+                </label>
+
+                <div class="ggr-auth-actions">
+                    <button type="submit" class="ggr-btn ggr-btn-primary">Konfirmasi</button>
+                    @if (Route::has('password.request'))
+                        <a class="ggr-btn" href="{{ route('password.request') }}">Lupa Password</a>
+                    @endif
+                </div>
+            </form>
         </div>
-    </div>
-</div>
+    </section>
 @endsection

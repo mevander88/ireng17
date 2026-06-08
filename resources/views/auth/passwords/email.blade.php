@@ -1,47 +1,41 @@
-@extends('layouts.app')
+@extends('layouts.ggr')
+
+@section('title', 'Reset Password')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+    <section class="ggr-section ggr-auth-section">
+        <div class="ggr-auth-shell">
+            <div class="ggr-auth-copy">
+                <span class="ggr-eyebrow">Akun ireng17</span>
+                <h1>Reset password</h1>
+                <p>Masukkan email akun untuk menerima tautan reset password.</p>
             </div>
+
+            <form class="ggr-account-panel ggr-auth-card" method="POST" action="{{ route('password.email') }}">
+                @csrf
+
+                <div class="ggr-section-heading">
+                    <div>
+                        <span class="ggr-eyebrow">Recovery</span>
+                        <h2>Kirim Link Reset</h2>
+                    </div>
+                </div>
+
+                @if (session('status'))
+                    <div class="ggr-alert is-success">{{ session('status') }}</div>
+                @endif
+
+                @error('email')
+                    <div class="ggr-alert is-danger">{{ $message }}</div>
+                @enderror
+
+                <label>
+                    Email
+                    <input type="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                </label>
+
+                <button type="submit" class="ggr-btn ggr-btn-primary">Kirim Link</button>
+            </form>
         </div>
-    </div>
-</div>
+    </section>
 @endsection

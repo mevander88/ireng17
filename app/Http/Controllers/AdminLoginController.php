@@ -14,7 +14,7 @@ class AdminLoginController extends Controller
     public function index()
     {
         $setting = Setting::first();
-        return view('auth.login', compact('setting'));
+        return view('auth.admin-login', compact('setting'));
     }
 
     public function auth(Request $request)

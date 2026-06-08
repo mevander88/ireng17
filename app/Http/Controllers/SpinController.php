@@ -13,7 +13,7 @@ class SpinController extends Controller
 
     public function index()
     {
-        return view('layouts.spin');
+        return redirect('/promotion');
     }
     public function spinPrize(Request $request)
     {

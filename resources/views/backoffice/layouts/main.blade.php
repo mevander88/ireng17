@@ -46,14 +46,12 @@ $setting = Setting::first();
     <script src="{{ asset('Admin/plugins/jquery/jquery.min.js') }}"></script>
     <!-- jQuery UI 1.11.4 -->
     <script src="{{ asset('Admin/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-    <!-- Custom style -->
-    <link rel="stylesheet" href="{{ asset('Admin/css/backoffice.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Montserrat:wght@700;800&display=swap">
-    <link rel="stylesheet" href="{{ asset('Admin/css/boray-midnight-admin.css') }}">
-    <link rel="icon" href="{{ !empty($setting?->logo) ? asset('storage/' . $setting->logo) : asset('assets/Logo.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ asset('Admin/css/ireng-admin.css') }}">
+    <link rel="icon" href="{{ !empty($setting?->logo) ? asset('storage/' . $setting->logo) : asset('assets/images/provider-covers/spribe-aviator.svg') }}" type="image/svg+xml">
 
 
 </head>

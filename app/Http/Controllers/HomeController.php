@@ -13,8 +13,6 @@ class HomeController extends Controller
     
     public function index()
     {
-        $setting = Setting::first();
-        $banners = Banner::all();
-        return view('welcome', compact('setting', 'banners'));
+        return redirect('/');
     }
 }

@@ -107,37 +107,22 @@ class GameCatalogController extends Controller
 
     public function category(string $slug)
     {
-        abort_unless(isset(self::CATEGORY_PROVIDERS[$slug]), 404);
-
-        return view('slots.games', [
-            'title' => strtoupper(str_replace('-', ' ', $slug)),
-            'game' => $this->loadMany(self::CATEGORY_PROVIDERS[$slug]),
-        ]);
+        return redirect(match ($slug) {
+            'sports', 'IBC' => '/sports',
+            'casino' => '/casino',
+            'e-games' => '/e-games',
+            default => '/slots',
+        });
     }
 
     public function slots()
     {
-        $providers = $this->loadProviders()
-            ->filter(fn ($provider) => strtolower((string) ($provider->type ?? '')) === 'slot')
-            ->map(fn ($provider) => $this->normalizeProviderCard($provider))
-            ->values();
-
-        if ($providers->isEmpty()) {
-            $providers = $this->fallbackSlotProviders();
-        }
-
-        return view('slots.provider', compact('providers'));
+        return redirect('/slots');
     }
 
     public function slotProvider(string $slug)
     {
-        $provider = $this->resolveProviderCode($slug);
-        abort_unless($provider, 404);
-
-        return view('slots.games', [
-            'title' => strtoupper(str_replace(['-', '_'], ' ', $slug)),
-            'game' => $this->loadOne(['api' => $provider, 'fallback' => $this->fallbackForProvider($provider)]),
-        ]);
+        return redirect('/ggr/provider/' . Str::slug($slug));
     }
 
     private function loadMany(array $providers): Collection

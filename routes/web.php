@@ -108,12 +108,10 @@ Route::get('/promotion', function () {
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
-Route::get('/old-home', [HomeController::class, 'index']);
+Route::redirect('/old-home', '/');
 Route::get('/slots', [GgrSiteController::class, 'providers'])->defaults('type', 'slot');
 
-Route::get('/complain-form', function () {
-    return view('content.complain');
-});
+Route::redirect('/complain-form', '/');
 
 Route::get('/sports', [GgrSiteController::class, 'providers'])->defaults('type', 'SB');
 
@@ -125,34 +123,24 @@ Route::get('/spxkid', function () {
 
 Route::get('/casino', [GgrSiteController::class, 'providers'])->defaults('type', 'live');
 
-Route::get('/p2p', [GameCatalogController::class, 'category'])->defaults('slug', 'p2p');
+Route::redirect('/p2p', '/slots');
 
-Route::get('/fish-hunter', [GameCatalogController::class, 'category'])->defaults('slug', 'fish-hunter');
+Route::redirect('/fish-hunter', '/slots');
 
-Route::get('/lottery', [GameCatalogController::class, 'category'])->defaults('slug', 'lottery');
+Route::redirect('/lottery', '/slots');
 
 Route::get('/e-games', [GgrSiteController::class, 'providers'])->defaults('type', 'MN');
 
-Route::get('/cockfight', function () {
-    return view('games.cockfight');
-});
+Route::redirect('/cockfight', '/casino');
 
 // menu
-Route::get('/memo', function () {
-    return view('memo');
-});
+Route::redirect('/memo', '/');
 
-Route::get('/contact-us', function () {
-    return view('contact-us');
-});
+Route::redirect('/contact-us', '/');
 
-Route::get('/complain', function () {
-    return view('content.complain');
-});
+Route::redirect('/complain', '/');
 
-Route::get('/refferal', function () {
-    return view('refferal');
-});
+Route::redirect('/refferal', '/register');
 
 
 Route::get('/username_phone', function (Request $request) {
@@ -333,32 +321,16 @@ Route::get('/history-play/user', [HistoryPlayController::class, 'showForm'])
     Route::resource('/account/lastDirectTransfer', UserHistoryController::class);
     Route::resource('/account/history', UserPernyataanController::class);
 
-    Route::get('/ajaxprofileEdit', function () {
-        return view('profile_edit');
-    });
-
-    Route::get('/ajaxchgPass', function () {
-        return view('change_password');
-    });
-
-    
-    Route::get('/getBal', function () {
-        return view('get_balance');
-    });
-    Route::get('/ajaxIDNBal', function () {
-        return view('get_balance');
-    });
-
     Route::GET('/search-history', [RefferalController::class, 'searchHistory']);
     Route::GET('/search-history-today', [RefferalController::class, 'getTodaReff']);
 });
 
 Route::get('/ggr/provider/{slug}', [GgrSiteController::class, 'providerGames'])->name('ggr.provider');
 Route::get('/slots/game_list/{slug}', [GgrSiteController::class, 'providerGames']);
-Route::get('/game/sports/game_list/IBC', [GameCatalogController::class, 'category'])->defaults('slug', 'IBC');
+Route::redirect('/game/sports/game_list/IBC', '/sports');
 Route::get('/game_process/{game}', [GameController::class, 'connect_games'])->where('game', '.*');
 Route::post('/jayapay/callback', [PaymentGatewayController::class, 'callback']);
 
 
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::redirect('/home', '/')->name('home');
