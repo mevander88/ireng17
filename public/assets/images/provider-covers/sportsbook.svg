@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Sportsbook cover">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#171923"/>
+      <stop offset=".52" stop-color="#25164a"/>
+      <stop offset="1" stop-color="#0d1018"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="20%" r="58%">
+      <stop offset="0" stop-color="#ffc640" stop-opacity=".45"/>
+      <stop offset=".45" stop-color="#8b5cf6" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="url(#bg)"/>
+  <rect width="960" height="540" rx="36" fill="url(#glow)"/>
+  <path d="M72 404c98-86 198-129 300-129 97 0 162 42 257 42 82 0 159-33 259-100v224H72z" fill="#10131d" opacity=".7"/>
+  <g fill="none" stroke="#d0bcff" stroke-width="9" opacity=".55">
+    <path d="M152 354h656"/>
+    <path d="M250 354v-76m460 76v-76"/>
+    <path d="M362 354c24-66 79-104 142-104s118 38 142 104"/>
+  </g>
+  <g transform="translate(384 132)">
+    <circle cx="96" cy="96" r="84" fill="#ffc640"/>
+    <path d="M96 31a65 65 0 1 0 0 130 65 65 0 0 0 0-130zm0 19a46 46 0 1 1 0 92 46 46 0 0 1 0-92z" fill="#261a00"/>
+    <path d="M96 47v98M47 96h98M60 60l72 72M132 60l-72 72" stroke="#261a00" stroke-width="10" stroke-linecap="round" opacity=".72"/>
+  </g>
+  <text x="480" y="438" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="58" font-weight="800" fill="#ffdf9f">SPORTSBOOK</text>
+</svg>

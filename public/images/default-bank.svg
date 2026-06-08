@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 240 120" role="img" aria-labelledby="title">
+  <title id="title">Default bank</title>
+  <rect width="240" height="120" rx="18" fill="#171b35"/>
+  <path d="M48 50 120 22l72 28v12H48V50Z" fill="#f4c76a"/>
+  <path d="M62 70h116v18H62V70Z" fill="#2b315d"/>
+  <path d="M72 64h16v24H72V64Zm40 0h16v24h-16V64Zm40 0h16v24h-16V64Z" fill="#f4c76a"/>
+  <text x="120" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#ffffff">BANK</text>
+</svg>

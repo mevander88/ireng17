@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 240 120" role="img" aria-labelledby="title">
+  <title id="title">Default e-wallet</title>
+  <rect width="240" height="120" rx="18" fill="#171b35"/>
+  <rect x="50" y="32" width="140" height="68" rx="18" fill="#2b315d"/>
+  <path d="M72 46h78a16 16 0 0 1 16 16v8h-40a18 18 0 0 0 0 36H72a22 22 0 0 1-22-22V68a22 22 0 0 1 22-22Z" fill="#6f5cff"/>
+  <circle cx="128" cy="88" r="8" fill="#f4c76a"/>
+  <text x="120" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#ffffff">E-WALLET</text>
+</svg>

@@ -1,0 +1,448 @@
+@font-face {
+    font-family: "icomoon";
+    src: url("fonts/icomoon8138.eot");
+    src: url("fonts/icomoon8138.eot") format("embedded-opentype"),
+        url("fonts/icomoon8138.woff2") format("woff2"),
+        url("fonts/icomoon8138.ttf") format("truetype"),
+        url("fonts/icomoon8138.woff") format("woff"),
+        url("fonts/icomoon8138.svg") format("svg");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+i {
+    font-family: "icomoon" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-dream-book:before {
+    content: "\e940";
+}
+.icon-number-result:before {
+    content: "\e941";
+}
+.icon-lips:before {
+    content: "\e94b";
+}
+.icon-bank:before {
+    content: "\e94a";
+}
+.icon-invoice:before {
+    content: "\e948";
+}
+.icon-keyboard-solid:before {
+    content: "\e947";
+}
+.icon-hand-holding-usd-solid:before {
+    content: "\e942";
+}
+.icon-crown:before {
+    content: "\e916";
+}
+.icon-lottery:before {
+    content: "\e93c";
+}
+.icon-casino:before {
+    content: "\e93a";
+}
+.icon-others:before {
+    content: "\e93d";
+}
+.icon-slot:before {
+    content: "\e939";
+}
+.icon-sun-moon:before {
+    content: "\e92a";
+}
+.icon-rng:before {
+    content: "\e921";
+}
+.icon-p2p:before {
+    content: "\e922";
+}
+.icon-fish_hunter:before {
+    content: "\e923";
+}
+.icon-cockfight:before {
+    content: "\e924";
+}
+.icon-menu-poker-01:before {
+    content: "\e932";
+}
+.icon-android:before {
+    content: "\e92e";
+    color: #a4c639;
+}
+.icon-apple:before {
+    content: "\e92f";
+    color: #999;
+}
+.icon-line:before {
+    content: "\e91b";
+}
+.icon-users2:before {
+    content: "\e91c";
+}
+.icon-cash:before {
+    content: "\e93b";
+}
+.icon-stamp:before {
+    content: "\e93f";
+}
+.icon-atm:before {
+    content: "\e90f";
+}
+.icon-bars:before {
+    content: "\e91d";
+}
+.icon-coinbag:before {
+    content: "\e925";
+}
+.icon-megaphone:before {
+    content: "\e92d";
+}
+.icon-eye:before {
+    content: "\f06e";
+}
+.icon-eye-slash:before {
+    content: "\f070";
+}
+.icon-question-circle-o:before {
+    content: "\f29c";
+}
+.icon-refresh:before {
+    content: "\f021";
+}
+.icon-chevron-left:before {
+    content: "\f053";
+}
+.icon-chevron-right:before {
+    content: "\f054";
+}
+.icon-twitter:before {
+    content: "\f099";
+}
+.icon-facebook:before {
+    content: "\f09a";
+}
+.icon-facebook-f:before {
+    content: "\f09a";
+}
+.icon-youtube-play:before {
+    content: "\f16a";
+}
+.icon-instagram:before {
+    content: "\f16d";
+}
+.icon-safari:before {
+    content: "\f267";
+}
+.icon-chrome:before {
+    content: "\f268";
+}
+.icon-firefox:before {
+    content: "\f269";
+}
+.icon-credit-card-alt:before {
+    content: "\f283";
+}
+.icon-telegram:before {
+    content: "\e907";
+}
+.icon-wechat:before {
+    content: "\e906";
+}
+.icon-skype:before {
+    content: "\e905";
+}
+.icon-km_gaming_dark:before {
+    content: "\e908";
+}
+.icon-play-solid:before {
+    content: "\e945";
+}
+.icon-zalo .path1:before {
+    content: "\e966";
+    color: rgb(230, 239, 244);
+}
+.icon-zalo .path2:before {
+    content: "\e969";
+    margin-left: -1em;
+    color: rgb(182, 209, 221);
+}
+.icon-zalo .path3:before {
+    content: "\e96e";
+    margin-left: -1em;
+    color: rgb(65, 160, 215);
+}
+.icon-zalo .path4:before {
+    content: "\e96f";
+    margin-left: -1em;
+    color: rgb(255, 255, 255);
+}
+.icon-Zalo .path1:before {
+    content: "\e95f";
+    color: rgb(253, 254, 254);
+}
+.icon-Zalo .path2:before {
+    content: "\e960";
+    margin-left: -1.0537109375em;
+    color: rgb(1, 128, 199);
+}
+.icon-Zalo .path3:before {
+    content: "\e961";
+    margin-left: -1.0537109375em;
+    color: rgb(1, 114, 177);
+}
+.icon-Zalo .path4:before {
+    content: "\e962";
+    margin-left: -1.0537109375em;
+    color: rgb(1, 128, 199);
+}
+.icon-Zalo .path5:before {
+    content: "\e963";
+    margin-left: -1.0537109375em;
+    color: rgb(1, 128, 199);
+}
+.icon-Zalo .path6:before {
+    content: "\e964";
+    margin-left: -1.0537109375em;
+    color: rgb(253, 254, 254);
+}
+.icon-Viber:before {
+    content: "\e965";
+    color: #7b519d;
+}
+.icon-google-play .path1:before {
+    content: "\e959";
+    color: rgb(33, 150, 243);
+}
+.icon-google-play .path2:before {
+    content: "\e95a";
+    margin-left: -1em;
+    color: rgb(76, 175, 80);
+}
+.icon-google-play .path3:before {
+    content: "\e95b";
+    margin-left: -1em;
+    color: rgb(255, 193, 7);
+}
+.icon-google-play .path4:before {
+    content: "\e95c";
+    margin-left: -1em;
+    color: rgb(244, 67, 54);
+}
+.icon-android1:before {
+    content: "\e953";
+    color: #aac148;
+}
+.icon-x-square:before {
+    content: "\e93e";
+}
+.icon-x:before {
+    content: "\e931";
+}
+.icon-comment:before {
+    content: "\e90b";
+}
+.icon-users:before {
+    content: "\e934";
+}
+.icon-bullhorn:before {
+    content: "\e900";
+}
+.icon-mail_outline:before {
+    content: "\e94c";
+}
+.icon-download:before {
+    content: "\e909";
+}
+.icon-keyboard_arrow_left:before {
+    content: "\e935";
+}
+.icon-keyboard_arrow_right:before {
+    content: "\e936";
+}
+.icon-videogame_asset:before {
+    content: "\e938";
+}
+.icon-refresh-2:before {
+    content: "\e920";
+}
+.icon-notifications_none:before {
+    content: "\e94e";
+}
+.icon-share:before {
+    content: "\e902";
+}
+.icon-language:before {
+    content: "\e903";
+}
+.icon-logout:before {
+    content: "\e91a";
+}
+.icon-double_arrow_r:before {
+    content: "\e92b";
+}
+.icon-double_arrow_l:before {
+    content: "\e90d";
+}
+.icon-help-circle:before {
+    content: "\e911";
+}
+.icon-shield:before {
+    content: "\e90e";
+}
+.icon-chat1:before {
+    content: "\e913";
+}
+.icon-attachment:before {
+    content: "\e9cd";
+}
+.icon-cross:before {
+    content: "\ea0f";
+}
+.icon-home:before {
+    content: "\e91e";
+}
+.icon-copy1:before {
+    content: "\e94d";
+}
+.icon-qrcode:before {
+    content: "\e950";
+}
+.icon-phone:before {
+    content: "\e952";
+}
+.icon-address-book:before {
+    content: "\e946";
+}
+.icon-display:before {
+    content: "\e956";
+}
+.icon-undo:before {
+    content: "\e967";
+}
+.icon-search:before {
+    content: "\e986";
+}
+.icon-lock:before {
+    content: "\e98f";
+}
+.icon-equalizer2:before {
+    content: "\e993";
+}
+.icon-fire:before {
+    content: "\e9a9";
+}
+.icon-bin:before {
+    content: "\e9ac";
+}
+.icon-clipboard:before {
+    content: "\e9ba";
+}
+.icon-notification:before {
+    content: "\ea08";
+}
+.icon-question:before {
+    content: "\ea09";
+}
+.icon-stop2:before {
+    content: "\ea1e";
+}
+.icon-whatsapp:before {
+    content: "\ea93";
+}
+.icon-sun:before {
+    content: "\e929";
+}
+.icon-copy:before {
+    content: "\e92c";
+}
+.icon-mobile:before {
+    content: "\e958";
+}
+.icon-redo:before {
+    content: "\e968";
+}
+.icon-user1:before {
+    content: "\e971";
+}
+.icon-clipboard1:before {
+    content: "\e9b8";
+}
+.icon-list-numbered:before {
+    content: "\e9b9";
+}
+.icon-info:before {
+    content: "\ea0c";
+}
+.icon-envelope:before {
+    content: "\e904";
+}
+.icon-transfer:before {
+    content: "\e928";
+}
+.icon-user:before {
+    content: "\e90c";
+}
+.icon-clock:before {
+    content: "\e90a";
+}
+.icon-gift:before {
+    content: "\e901";
+}
+.icon-arrow-bold-up:before {
+    content: "\e933";
+}
+.icon-arrow-long-right:before {
+    content: "\e91f";
+}
+.icon-chevron-thin-down:before {
+    content: "\e912";
+}
+.icon-chevron-thin-right:before {
+    content: "\e930";
+}
+.icon-chevron-thin-up:before {
+    content: "\e910";
+}
+.icon-user-o:before {
+    content: "\e82a";
+}
+.icon-history:before {
+    content: "\e863";
+}
+.icon-magnifier:before {
+    content: "\e86f";
+}
+.icon-close:before {
+    content: "\e918";
+}
+.icon-currency-dollar:before {
+    content: "\e937";
+}
+.icon-checkmark:before {
+    content: "\e914";
+}
+.icon-cancel:before {
+    content: "\e915";
+}
+.icon-coins:before {
+    content: "\e926";
+}
+.icon-pig:before {
+    content: "\e927";
+}
+.icon-soccer:before {
+    content: "\e917";
+}
+.icon-wallet:before {
+    content: "\e919";
+}
