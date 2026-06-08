@@ -90,14 +90,8 @@
                 @endauth
             </div>
 
-            <div class="ggr-home-popup-art {{ $heroGame?->safe_banner ? '' : 'is-empty' }}">
-                @if ($heroGame?->safe_banner)
-                    <img src="{{ $heroGame->safe_banner }}" alt="{{ $heroGame->game_name }}" loading="eager">
-                    <span>{{ $heroGame->game_name }}</span>
-                @else
-                    <span class="material-symbols-outlined">casino</span>
-                    <strong>Slot Populer</strong>
-                @endif
+            <div class="ggr-home-popup-art ggr-home-popup-logo">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo {{ strtoupper($brandName) }}" loading="eager">
             </div>
         </div>
     </div>
