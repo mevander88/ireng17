@@ -4587,9 +4587,9 @@ button[type="submit"] i {
   .small-box:hover,
   .info-box:hover,
   .ggr-admin-panel:hover {
-    border-color: rgba(255, 223, 159, 0.3) !important;
-    box-shadow: 0 24px 62px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(255, 223, 159, 0.08) !important;
-    transform: translateY(-4px);
+    border-color: rgba(208, 188, 255, 0.22) !important;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.3), 0 0 18px rgba(139, 92, 246, 0.12) !important;
+    transform: translateY(-2px);
   }
 }
 
@@ -4602,9 +4602,8 @@ body.ireng-admin-dark .main-sidebar,
 body.ireng-admin-dark .main-footer,
 body.ireng-admin-dark .control-sidebar {
   background:
-    radial-gradient(circle at 18% -8rem, rgba(139, 92, 246, 0.16), transparent 28rem),
-    radial-gradient(circle at 98% 8rem, rgba(255, 198, 64, 0.1), transparent 24rem),
-    linear-gradient(180deg, #0a0a0f, #101112 46%, #0a0a0f) !important;
+    radial-gradient(circle at 18% -8rem, rgba(139, 92, 246, 0.1), transparent 26rem),
+    #0a0a0f !important;
   color: var(--admin-text) !important;
 }
 
@@ -4615,9 +4614,12 @@ body.ireng-admin-dark .navbar-white,
 body.ireng-admin-dark .navbar-light,
 body.ireng-admin-dark .navbar-search-block,
 body.ireng-admin-dark .main-footer {
-  background: rgba(10, 10, 15, 0.92) !important;
-  border-color: var(--admin-line) !important;
+  background: rgba(18, 20, 21, 0.72) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
   color: var(--admin-text) !important;
+  box-shadow: 0 4px 20px rgba(26, 16, 51, 0.28) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 body.ireng-admin-dark .card,
@@ -4636,11 +4638,13 @@ body.ireng-admin-dark .bg-success,
 body.ireng-admin-dark .bg-warning,
 body.ireng-admin-dark .bg-danger,
 body.ireng-admin-dark .bg-primary {
-  background:
-    radial-gradient(circle at 0 0, rgba(139, 92, 246, 0.08), transparent 16rem),
-    linear-gradient(180deg, rgba(30, 32, 33, 0.94), rgba(18, 20, 21, 0.96)) !important;
-  border-color: var(--admin-line) !important;
+  background: rgba(30, 32, 33, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
   color: var(--admin-text) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 body.ireng-admin-dark .card-header,
@@ -4648,8 +4652,8 @@ body.ireng-admin-dark .card-footer,
 body.ireng-admin-dark .modal-header,
 body.ireng-admin-dark .modal-footer,
 body.ireng-admin-dark .small-box-footer {
-  background: rgba(255, 255, 255, 0.035) !important;
-  border-color: var(--admin-line-soft) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
   color: var(--admin-text) !important;
 }
 
@@ -4676,6 +4680,12 @@ body.ireng-admin-dark .small-box h3 {
   color: var(--admin-gold) !important;
 }
 
+body.ireng-admin-dark .small-box .icon,
+body.ireng-admin-dark .info-box-icon,
+body.ireng-admin-dark .card-header i {
+  color: rgba(208, 188, 255, 0.42) !important;
+}
+
 body.ireng-admin-dark .table,
 body.ireng-admin-dark table,
 body.ireng-admin-dark .table tbody,
@@ -4691,7 +4701,7 @@ body.ireng-admin-dark table.dataTable tbody td {
 
 body.ireng-admin-dark .table thead th,
 body.ireng-admin-dark table.dataTable thead th {
-  background: rgba(255, 255, 255, 0.045) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
   color: var(--admin-muted) !important;
 }
 
@@ -4706,8 +4716,8 @@ body.ireng-admin-dark input[type="number"],
 body.ireng-admin-dark input[type="email"],
 body.ireng-admin-dark input[type="password"],
 body.ireng-admin-dark input[type="date"] {
-  background: rgba(255, 255, 255, 0.055) !important;
-  border-color: var(--admin-line) !important;
+  background: rgba(26, 28, 29, 0.86) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
   color: var(--admin-text) !important;
 }
 
@@ -4726,4 +4736,13 @@ body.ireng-admin-dark .dataTables_filter,
 body.ireng-admin-dark .text-muted,
 body.ireng-admin-dark small {
   color: var(--admin-muted) !important;
+}
+
+body.ireng-admin-dark .bg-light,
+body.ireng-admin-dark .bg-white,
+body.ireng-admin-dark .text-dark,
+body.ireng-admin-dark .badge-light,
+body.ireng-admin-dark .list-group-item {
+  background-color: rgba(30, 32, 33, 0.72) !important;
+  color: var(--admin-text) !important;
 }
