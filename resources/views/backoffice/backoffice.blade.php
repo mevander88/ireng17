@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-info">
+            <div class="small-box admin-metric-card is-deposit">
                 <div class="inner">
                     <h3><sup style="font-size: 20px">Deposit (Harian)</sup></h3>
 
@@ -20,7 +20,7 @@
         <!-- ./col -->
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-success">
+            <div class="small-box admin-metric-card is-balance">
                 <div class="inner">
                     <h3><sup style="font-size: 20px">Agent Balance</sup></h3>
 
@@ -36,7 +36,7 @@
         <!-- ./col -->
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-warning">
+            <div class="small-box admin-metric-card is-member">
                 <div class="inner">
                     <h3><sup style="font-size: 20px">BLAST TERUS!</sup></h3>
 
@@ -53,7 +53,7 @@
 
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-secondary">
+            <div class="small-box admin-metric-card is-game">
                 <div class="inner">
                     <h3><sup style="font-size: 20px">Game</sup></h3>
 
@@ -69,9 +69,9 @@
             <!-- small box -->
             <!-- TOTAL -->
 
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-member">
                 <div class="inner">
-                    <h6 style="color:blue;">Member (Harian)</h6>
+                    <h6>Member (Harian)</h6>
 
                     <p>{{ number_format($member->trans_now) }}</p>
                 </div>
@@ -84,9 +84,9 @@
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-member">
                 <div class="inner">
-                    <h6 style="color:blue;">Member (Kemarin)</h6>
+                    <h6>Member (Kemarin)</h6>
 
 
                     <p>{{ number_format($member->trans_yesterday) }}</p>
@@ -100,9 +100,9 @@
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-member">
                 <div class="inner">
-                    <h6 style="color:blue;">Member (Bulanan)</h6>
+                    <h6>Member (Bulanan)</h6>
 
                     <p>{{ number_format($member->trans_month) }}</p>
                 </div>
@@ -115,9 +115,9 @@
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-member">
                 <div class="inner">
-                    <h6 style="color:blue;">Member (Total)</h6>
+                    <h6>Member (Total)</h6>
 
                     <p>{{ number_format($member->trans_all) }}</p>
                 </div>
@@ -130,9 +130,9 @@
         </div> <br>
         <!-- large box -->
         <div class="col-sm-12 p-2">
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-net">
                 <div class="inner">
-                    <h3 style="color:light;">Total Bersih (Harian)</h3>
+                    <h3>Total Bersih (Harian)</h3>
 
                     <h4 id="total_bersih"></h4>
                 </div>
@@ -147,9 +147,9 @@
         <div class="col-lg-3 col-6">
 
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-deposit">
                 <div class="inner">
-                    <h6 style="color:green;">Total Deposit</h6>
+                    <h6>Total Deposit</h6>
 
                     <p>{{ number_format($deposit->trans_count, 0) }}</p>
                 </div>
@@ -162,9 +162,9 @@
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-deposit">
                 <div class="inner">
-                    <h6 style="color:green;">Nominal (Kemarin)</h6>
+                    <h6>Nominal (Kemarin)</h6>
 
                     <p>IDR {{ number_format($deposit->trans_yesterday, 0) }}</p>
                 </div>
@@ -177,9 +177,9 @@
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-deposit">
                 <div class="inner">
-                    <h6 style="color:green;">Nominal (Bulanan)</h6>
+                    <h6>Nominal (Bulanan)</h6>
 
                     <p>IDR {{ number_format($deposit->trans_month, 2) }}</p>
                 </div>
@@ -192,9 +192,9 @@
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-light">
+            <div class="small-box admin-metric-card is-deposit">
                 <div class="inner">
-                    <h6 style="color:green;">Nominal (Total)</h6>
+                    <h6>Nominal (Total)</h6>
 
                     <p>IDR {{ number_format($deposit->trans_all, 2) }}</p>
                 </div>

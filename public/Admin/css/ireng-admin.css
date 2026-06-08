@@ -4746,3 +4746,263 @@ body.ireng-admin-dark .list-group-item {
   background-color: rgba(30, 32, 33, 0.72) !important;
   color: var(--admin-text) !important;
 }
+
+/* Backoffice color contract. Keep this as the last theming layer. */
+body.ireng-admin-dark {
+  --bo-bg: #0a0a0f;
+  --bo-surface: #121415;
+  --bo-glass: rgba(30, 32, 33, 0.76);
+  --bo-glass-strong: rgba(40, 42, 43, 0.88);
+  --bo-border: rgba(255, 255, 255, 0.1);
+  --bo-border-soft: rgba(255, 255, 255, 0.06);
+  --bo-text: #e2e2e3;
+  --bo-muted: #cbc3d7;
+  --bo-soft: #958ea0;
+  --bo-purple: #d0bcff;
+  --bo-purple-solid: #8b5cf6;
+  --bo-gold: #ffc640;
+  --bo-gold-soft: #ffdf9f;
+  --bo-success: #65d6a6;
+  --bo-danger: #ff8f87;
+  --bo-shadow: 0 8px 32px rgba(0, 0, 0, 0.34);
+  background: var(--bo-bg) !important;
+  color: var(--bo-text) !important;
+}
+
+body.ireng-admin-dark .wrapper,
+body.ireng-admin-dark .content-wrapper {
+  background:
+    radial-gradient(circle at 16% -10rem, rgba(139, 92, 246, 0.12), transparent 30rem),
+    var(--bo-bg) !important;
+  color: var(--bo-text) !important;
+}
+
+body.ireng-admin-dark .main-header,
+body.ireng-admin-dark .main-sidebar,
+body.ireng-admin-dark .main-footer,
+body.ireng-admin-dark .navbar,
+body.ireng-admin-dark .navbar-search-block {
+  background: rgba(18, 20, 21, 0.78) !important;
+  border-color: var(--bo-border) !important;
+  color: var(--bo-text) !important;
+  box-shadow: 0 4px 20px rgba(26, 16, 51, 0.28) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+body.ireng-admin-dark .card,
+body.ireng-admin-dark .small-box,
+body.ireng-admin-dark .info-box,
+body.ireng-admin-dark .callout,
+body.ireng-admin-dark .modal-content,
+body.ireng-admin-dark .dropdown-menu,
+body.ireng-admin-dark .table-responsive,
+body.ireng-admin-dark .dataTables_wrapper,
+body.ireng-admin-dark .admin-filter-bar,
+body.ireng-admin-dark .bg-light,
+body.ireng-admin-dark .bg-white,
+body.ireng-admin-dark .bg-secondary,
+body.ireng-admin-dark .bg-info,
+body.ireng-admin-dark .bg-success,
+body.ireng-admin-dark .bg-warning,
+body.ireng-admin-dark .bg-danger,
+body.ireng-admin-dark .bg-primary {
+  background: var(--bo-glass) !important;
+  border: 1px solid var(--bo-border) !important;
+  color: var(--bo-text) !important;
+  box-shadow: var(--bo-shadow) !important;
+}
+
+body.ireng-admin-dark .card .card,
+body.ireng-admin-dark .card .small-box,
+body.ireng-admin-dark .card .info-box,
+body.ireng-admin-dark .card .table-responsive,
+body.ireng-admin-dark .card .dataTables_wrapper,
+body.ireng-admin-dark .card-body:has(> table),
+body.ireng-admin-dark .card-body:has(.table),
+body.ireng-admin-dark .tab-content .card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.ireng-admin-dark .card-header,
+body.ireng-admin-dark .card-footer,
+body.ireng-admin-dark .modal-header,
+body.ireng-admin-dark .modal-footer,
+body.ireng-admin-dark .small-box-footer {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: var(--bo-border-soft) !important;
+  color: var(--bo-text) !important;
+}
+
+body.ireng-admin-dark .admin-metric-card {
+  min-height: 142px;
+  overflow: hidden;
+  border-radius: 16px !important;
+}
+
+body.ireng-admin-dark .admin-metric-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 100% 0, rgba(208, 188, 255, 0.12), transparent 12rem);
+}
+
+body.ireng-admin-dark .admin-metric-card.is-deposit::before {
+  background: radial-gradient(circle at 100% 0, rgba(255, 198, 64, 0.14), transparent 12rem);
+}
+
+body.ireng-admin-dark .admin-metric-card.is-member::before {
+  background: radial-gradient(circle at 100% 0, rgba(139, 92, 246, 0.16), transparent 12rem);
+}
+
+body.ireng-admin-dark .admin-metric-card.is-balance::before {
+  background: radial-gradient(circle at 100% 0, rgba(101, 214, 166, 0.14), transparent 12rem);
+}
+
+body.ireng-admin-dark .admin-metric-card.is-net::before {
+  background: radial-gradient(circle at 100% 0, rgba(255, 223, 159, 0.16), transparent 14rem);
+}
+
+body.ireng-admin-dark .small-box .inner {
+  position: relative;
+  z-index: 1;
+}
+
+body.ireng-admin-dark .small-box .inner h3,
+body.ireng-admin-dark .small-box .inner h4,
+body.ireng-admin-dark .small-box .inner h5,
+body.ireng-admin-dark .small-box .inner h6,
+body.ireng-admin-dark .card-title,
+body.ireng-admin-dark .modal-title,
+body.ireng-admin-dark h1,
+body.ireng-admin-dark h2,
+body.ireng-admin-dark h3,
+body.ireng-admin-dark h4,
+body.ireng-admin-dark h5,
+body.ireng-admin-dark h6 {
+  color: var(--bo-text) !important;
+}
+
+body.ireng-admin-dark .small-box .inner p,
+body.ireng-admin-dark .admin-metric-card .inner p,
+body.ireng-admin-dark .admin-metric-card #balance,
+body.ireng-admin-dark .admin-metric-card #total_bersih {
+  color: var(--bo-gold) !important;
+  font-weight: 800 !important;
+}
+
+body.ireng-admin-dark .small-box .icon,
+body.ireng-admin-dark .info-box-icon,
+body.ireng-admin-dark .nav-icon,
+body.ireng-admin-dark .card-header i {
+  color: rgba(208, 188, 255, 0.48) !important;
+}
+
+body.ireng-admin-dark .nav-sidebar .nav-link,
+body.ireng-admin-dark .navbar-nav .nav-link,
+body.ireng-admin-dark .breadcrumb-item,
+body.ireng-admin-dark .breadcrumb-item a,
+body.ireng-admin-dark .dataTables_info,
+body.ireng-admin-dark .dataTables_length,
+body.ireng-admin-dark .dataTables_filter,
+body.ireng-admin-dark .text-muted,
+body.ireng-admin-dark .form-text,
+body.ireng-admin-dark small {
+  color: var(--bo-muted) !important;
+}
+
+body.ireng-admin-dark .nav-sidebar .nav-link.active,
+body.ireng-admin-dark .nav-sidebar .nav-link:hover,
+body.ireng-admin-dark .nav-sidebar .menu-open > .nav-link,
+body.ireng-admin-dark .navbar-nav .nav-link:hover {
+  background: rgba(139, 92, 246, 0.16) !important;
+  color: var(--bo-purple) !important;
+}
+
+body.ireng-admin-dark .table,
+body.ireng-admin-dark table,
+body.ireng-admin-dark .table tbody,
+body.ireng-admin-dark .table tr,
+body.ireng-admin-dark .table td,
+body.ireng-admin-dark .table th,
+body.ireng-admin-dark table.dataTable,
+body.ireng-admin-dark table.dataTable tbody tr,
+body.ireng-admin-dark table.dataTable tbody td {
+  background-color: transparent !important;
+  color: var(--bo-text) !important;
+}
+
+body.ireng-admin-dark .table thead th,
+body.ireng-admin-dark table.dataTable thead th {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: var(--bo-border-soft) !important;
+  color: var(--bo-muted) !important;
+}
+
+body.ireng-admin-dark .table-hover tbody tr:hover,
+body.ireng-admin-dark table.dataTable tbody tr:hover {
+  background: rgba(208, 188, 255, 0.08) !important;
+}
+
+body.ireng-admin-dark .form-control,
+body.ireng-admin-dark .form-control-navbar,
+body.ireng-admin-dark .custom-select,
+body.ireng-admin-dark select,
+body.ireng-admin-dark textarea,
+body.ireng-admin-dark input[type="text"],
+body.ireng-admin-dark input[type="search"],
+body.ireng-admin-dark input[type="number"],
+body.ireng-admin-dark input[type="email"],
+body.ireng-admin-dark input[type="password"],
+body.ireng-admin-dark input[type="date"] {
+  background: rgba(26, 28, 29, 0.86) !important;
+  border-color: var(--bo-border) !important;
+  color: var(--bo-text) !important;
+}
+
+body.ireng-admin-dark .form-control::placeholder,
+body.ireng-admin-dark .form-control-navbar::placeholder {
+  color: rgba(203, 195, 215, 0.62) !important;
+}
+
+body.ireng-admin-dark .btn-primary,
+body.ireng-admin-dark .btn-success,
+body.ireng-admin-dark .page-item.active .page-link {
+  background: linear-gradient(135deg, var(--bo-gold), var(--bo-gold-soft)) !important;
+  border-color: rgba(255, 223, 159, 0.7) !important;
+  color: #261a00 !important;
+}
+
+body.ireng-admin-dark .btn-secondary,
+body.ireng-admin-dark .btn-default,
+body.ireng-admin-dark .btn-info,
+body.ireng-admin-dark .page-link {
+  background: rgba(208, 188, 255, 0.08) !important;
+  border-color: var(--bo-border) !important;
+  color: var(--bo-purple) !important;
+}
+
+body.ireng-admin-dark .btn-danger {
+  background: rgba(255, 143, 135, 0.14) !important;
+  border-color: rgba(255, 143, 135, 0.34) !important;
+  color: #ffdad6 !important;
+}
+
+body.ireng-admin-dark .admin-status-text.is-online {
+  color: var(--bo-success) !important;
+}
+
+body.ireng-admin-dark .admin-status-text.is-maintenance {
+  color: var(--bo-danger) !important;
+}
+
+body.ireng-admin-dark .text-dark,
+body.ireng-admin-dark .text-body,
+body.ireng-admin-dark .badge-light,
+body.ireng-admin-dark .list-group-item {
+  background-color: transparent !important;
+  color: var(--bo-text) !important;
+}

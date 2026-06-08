@@ -113,9 +113,9 @@
                                                     <label class="form-text text-muted" for="form-text text-muted">Status
                                                         Website :
                                                         @if ($setting->maintenance_mode == 0)
-                                                            <strong style="color: chartreuse"> Online</strong>
+                                                            <strong class="admin-status-text is-online"> Online</strong>
                                                         @else
-                                                            <strong style="color: rgb(255, 0, 0)"> Maintenance</strong>
+                                                            <strong class="admin-status-text is-maintenance"> Maintenance</strong>
                                                         @endif
                                                     </label>
                                                 </div>
