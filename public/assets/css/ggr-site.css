@@ -2668,12 +2668,19 @@ body.ggr-sidebar-open {
   }
 
   .ggr-nav-actions .ggr-nav-login {
-    min-width: 82px;
+    width: 44px;
+    min-width: 44px;
     min-height: 44px;
-    padding: 0 14px;
+    padding: 0;
+    gap: 0;
     border-color: rgba(255, 223, 159, 0.45);
     background: rgba(255, 223, 159, 0.1);
     color: var(--gold);
+    font-size: 0;
+  }
+
+  .ggr-nav-actions .ggr-nav-login .material-symbols-outlined {
+    font-size: 22px;
   }
 
   .ggr-main {
@@ -2866,8 +2873,9 @@ body.ggr-sidebar-open {
   }
 
   .ggr-nav-actions .ggr-nav-login {
-    width: auto;
-    font-size: 13px;
+    width: 44px;
+    min-width: 44px;
+    font-size: 0;
   }
 
   .ggr-nav-actions .ggr-nav-login::before {
