@@ -2705,6 +2705,10 @@ body.ggr-sidebar-open {
     font-size: 22px;
   }
 
+  .ggr-nav-actions .ggr-nav-deposit .material-symbols-outlined {
+    font-size: 22px;
+  }
+
   .ggr-main {
     padding-top: 86px;
   }

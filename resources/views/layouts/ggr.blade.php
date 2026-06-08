@@ -91,9 +91,9 @@
                         <span class="material-symbols-outlined">payments</span>
                         Withdraw
                     </a>
-                    <a class="ggr-btn ggr-btn-primary" href="{{ url('/account/deposit') }}">
+                    <a class="ggr-btn ggr-btn-primary ggr-nav-deposit" href="{{ url('/account/deposit') }}">
                         <span class="material-symbols-outlined">add_circle</span>
-                        Deposit
+                        <span class="ggr-nav-label">Deposit</span>
                     </a>
                 @else
                     <a class="ggr-btn ggr-nav-login" href="{{ url('/login') }}">
