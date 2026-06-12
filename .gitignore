@@ -10,6 +10,7 @@
 /vendor
 stitch_aplikasi_slot/
 database/*.sql
+!database/ireng17_full_dump.sql
 database/desktop.ini
 storage/logs/*.log
 storage/framework/cache/data/*

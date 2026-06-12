@@ -35,6 +35,7 @@ Project ini memakai Laravel 10, MySQL/MariaDB, asset publik statis di `public`, 
 - `public/Admin`: asset backoffice AdminLTE yang sudah dibersihkan.
 - `database/ireng17_schema.sql`: schema database.
 - `database/ireng17_minimal_seed.sql`: seed minimal.
+- `database/ireng17_full_dump.sql`: full dump schema + data terbaru untuk import shared hosting.
 - `.env.production.example`: template environment production.
 - `docs/DEPLOYMENT.md`: catatan deploy lebih detail.
 
@@ -151,7 +152,7 @@ Cara paling aman adalah arahkan document root domain ke folder `public`.
 
 Jika hosting tidak mengizinkan document root ke `public`, upload project ke root hosting dan pastikan file `.htaccess` root project ikut terupload. File `.htaccess` project sudah menolak akses langsung ke file/folder sensitif seperti `.env`, `vendor`, `storage`, `routes`, `config`, `database`, dan mengarahkan request ke `public`.
 
-Langkah umum cPanel:
+Langkah umum cPanel jika terminal tersedia:
 
 1. Upload semua file project.
 2. Buat database dan user MySQL.
@@ -176,6 +177,28 @@ php artisan view:cache
 ```
 
 Jika `storage:link` tidak bisa karena shared hosting membatasi symlink, buat folder `public/storage` manual dan pastikan upload backoffice mengarah ke folder publik yang writable.
+
+### Shared Hosting Tanpa Terminal
+
+Jika hosting tidak menyediakan terminal, gunakan workflow manual ini:
+
+1. Di lokal, pastikan dependency sudah ada dengan `composer install --no-dev --optimize-autoloader`.
+2. Upload seluruh project termasuk folder `vendor` ke hosting. Tanpa `vendor`, Laravel tidak akan jalan.
+3. Arahkan document root domain ke folder `public`. Jika tidak bisa, upload project di luar `public_html` lalu isi `public_html` dengan isi folder `public`.
+4. Buat database dan user MySQL dari cPanel.
+5. Import `database/ireng17_full_dump.sql` lewat phpMyAdmin. File ini sudah berisi schema dan data terbaru.
+6. Copy `.env.production.example` menjadi `.env` lewat File Manager.
+7. Isi `.env`: `APP_URL`, `AMP_URL`, database, `APP_KEY`, GGR, dan TopPayment.
+8. Jika belum punya `APP_KEY`, buat dari lokal dengan `php artisan key:generate --show`, lalu paste hasilnya ke `.env` hosting.
+9. Pastikan folder `storage`, `storage/logs`, `storage/framework/cache`, `storage/framework/sessions`, `storage/framework/views`, `bootstrap/cache`, `public/image-cache`, dan `public/storage` writable.
+10. Jika tidak bisa menjalankan `php artisan storage:link`, buat symlink dari fitur hosting jika ada. Jika tidak ada, copy isi `storage/app/public` ke `public/storage` setiap selesai upload asset backoffice.
+11. Jika hosting punya fitur Cron Jobs, tambahkan schedule Laravel:
+
+```text
+* * * * * /usr/local/bin/php /home/USER/path-ireng17/artisan schedule:run >> /dev/null 2>&1
+```
+
+Sesuaikan path PHP dan path project dengan informasi dari cPanel. Jika tidak ada cron, fitur web tetap jalan, tetapi pekerjaan terjadwal harus dijalankan manual dari backoffice atau sinkronisasi yang tersedia di UI.
 
 ## Konfigurasi User Admin
 

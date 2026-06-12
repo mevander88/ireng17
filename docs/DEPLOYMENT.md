@@ -15,6 +15,7 @@ Dokumen ini menjelaskan konfigurasi minimum untuk deploy project Laravel ini ke 
 
 - `.env.production.example`: template environment production.
 - `database/miscqccc_jarot.sql`: full database dump lokal lama, termasuk data awal. File ini mengandung data runtime/credential, jadi jangan dipush ke repository publik.
+- `database/ireng17_full_dump.sql`: full dump schema + data terbaru untuk import cepat, terutama shared hosting tanpa terminal.
 - `database/ireng17_schema.sql`: schema-only dump, tanpa `INSERT`.
 - `database/ireng17_minimal_seed.sql`: seed minimal non-secret untuk clean install.
 - `database/migrations/*`: migration runtime tambahan, termasuk tabel GGR.
@@ -47,14 +48,21 @@ Jika deploy belum HTTPS, set sementara `SESSION_SECURE_COOKIE=false`.
 
 ## 4. Database
 
-Pilihan A, deploy dengan data awal dari dump lokal:
+Pilihan A, deploy dengan data terbaru dari full dump:
+
+```bash
+mysql -u USER -p ireng17 < database/ireng17_full_dump.sql
+php artisan migrate --force
+```
+
+Pilihan B, deploy dengan data awal dari dump lokal lama:
 
 ```bash
 mysql -u USER -p ireng17 < database/miscqccc_jarot.sql
 php artisan migrate --force
 ```
 
-Pilihan B, deploy schema kosong:
+Pilihan C, deploy schema kosong:
 
 ```bash
 mysql -u USER -p ireng17 < database/ireng17_schema.sql
@@ -66,9 +74,67 @@ Catatan:
 
 - `database/ireng17_schema.sql` tidak membawa data admin, setting website, bank, game, atau transaksi.
 - `database/ireng17_minimal_seed.sql` hanya membuat setting dasar dan row `api` kosong tanpa credential.
-- Untuk production yang langsung jalan, gunakan full dump lokal secara manual lalu ubah kredensial admin dan setting dari backoffice.
-- Jangan commit full dump berisi token, password hash, transaksi, atau data member.
+- Untuk production yang langsung jalan, gunakan `database/ireng17_full_dump.sql` secara manual lalu ubah kredensial admin dan setting dari backoffice.
+- Full dump bisa berisi password hash, transaksi, setting, dan data runtime. Jangan bagikan repository atau file dump ke publik jika data tersebut sensitif.
 - Migration tetap wajib dijalankan setelah import dump untuk memastikan tabel/kolom runtime terbaru seperti `ggr_providers` dan `ggr_games` tersedia.
+
+## 4A. Shared Hosting Tanpa Terminal
+
+Jika cPanel/shared hosting tidak menyediakan terminal atau SSH:
+
+1. Jalankan `composer install --no-dev --optimize-autoloader` di lokal.
+2. Upload seluruh project ke hosting, termasuk folder `vendor`.
+3. Idealnya arahkan document root domain ke folder `public`.
+4. Jika document root tidak bisa diarahkan ke `public`, simpan folder Laravel di luar `public_html`, lalu pindahkan isi folder `public` ke `public_html`. Sesuaikan path `require` di `public_html/index.php` jika struktur folder berubah.
+5. Buat database dan user MySQL dari cPanel.
+6. Import `database/ireng17_full_dump.sql` lewat phpMyAdmin.
+7. Copy `.env.production.example` menjadi `.env` lewat File Manager.
+8. Isi `.env` sesuai hosting:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://domain-anda.com
+AMP_URL=https://domain-anda.com/amp
+DB_DATABASE=nama_database
+DB_USERNAME=user_database
+DB_PASSWORD=password_database
+SESSION_SECURE_COOKIE=true
+```
+
+9. Buat `APP_KEY` dari lokal:
+
+```bash
+php artisan key:generate --show
+```
+
+Paste hasilnya ke `APP_KEY` di `.env` hosting.
+
+10. Upload file key TopPayment manual ke `storage/app` jika payment aktif:
+
+- `storage/app/toppayment_private.pem`
+- `storage/app/toppayment_public.pem`
+- `storage/app/cacert.pem` jika hosting bermasalah dengan CA SSL.
+
+11. Pastikan folder berikut writable dari File Manager atau fitur permission hosting:
+
+- `storage`
+- `storage/logs`
+- `storage/framework/cache`
+- `storage/framework/sessions`
+- `storage/framework/views`
+- `bootstrap/cache`
+- `public/image-cache`
+- `public/storage`
+
+12. Jika `php artisan storage:link` tidak bisa dijalankan, gunakan fitur symlink hosting bila tersedia. Jika tidak tersedia, copy isi `storage/app/public` ke `public/storage` setiap kali ada upload logo, banner, atau asset backoffice.
+13. Jika hosting menyediakan Cron Jobs, isi command ini untuk scheduler:
+
+```text
+* * * * * /usr/local/bin/php /home/USER/path-ireng17/artisan schedule:run >> /dev/null 2>&1
+```
+
+Jika cron tidak tersedia, fitur utama web tetap jalan. Sinkronisasi provider/game dan pengecekan tertentu perlu dijalankan dari backoffice atau dilakukan manual.
 
 ## 5. Role User
 
