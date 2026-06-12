@@ -2351,10 +2351,10 @@ body.ggr-sidebar-open {
 .ggr-bottom-nav {
   position: fixed;
   z-index: 60;
-  left: max(12px, env(safe-area-inset-left));
-  right: max(12px, env(safe-area-inset-right));
+  left: 50%;
+  right: auto;
   bottom: max(10px, env(safe-area-inset-bottom));
-  width: min(460px, calc(100% - 24px));
+  width: min(460px, calc(100% - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -2367,10 +2367,11 @@ body.ggr-sidebar-open {
   box-shadow: 0 12px 42px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
+  transform: translateX(-50%);
 }
 
 .ggr-bottom-nav.has-transaction-hub {
-  width: min(540px, calc(100% - 16px));
+  width: min(540px, calc(100% - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 3px;
   padding: 10px 8px 8px;
