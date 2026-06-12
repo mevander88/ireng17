@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use App\Models\UserLogin;
-use App\Models\Game_users;
-use App\Models\Game_api;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller

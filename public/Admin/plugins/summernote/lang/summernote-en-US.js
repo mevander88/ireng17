@@ -276,4 +276,3 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default().extend((jquery__WEBPACK_IMPORTED_M
 /******/ })()
 ;
 });
-//# sourceMappingURL=summernote-en-US.js.map

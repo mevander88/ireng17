@@ -5,10 +5,40 @@ namespace App\Http\Controllers;
 use App\Http\Api\fiver;
 use App\Models\Saldo;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class GetSaldoController extends Controller
 {
+    public function refresh()
+    {
+        $localSaldo = (float) (Saldo::where('user_id', Auth::id())->value('saldo') ?? 0);
+
+        try {
+            $act = json_decode((new fiver())->userbalance(Auth::user()->name));
+            $apiBalance = data_get($act, 'user.balance');
+
+            if ($apiBalance !== null && is_numeric($apiBalance)) {
+                return response()->json([
+                    'error' => false,
+                    'balance' => (float) $apiBalance,
+                    'source' => 'api',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Saldo refresh API gagal', [
+                'user_id' => Auth::id(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        return response()->json([
+            'error' => false,
+            'balance' => $localSaldo,
+            'source' => 'local',
+        ]);
+    }
+
     /**
      * Ambil saldo realtime semua user dari API Fiver
      * Otomatis buat extplayer jika kosong

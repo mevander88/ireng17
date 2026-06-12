@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
-use App\Models\ApiSeamles;
+use App\Models\Api;
 
 class ApiSeeder extends Seeder
 {
@@ -14,10 +12,17 @@ class ApiSeeder extends Seeder
      */
     public function run(): void
     {
-        $api = new ApiSeamles();
-        $api->agentcode = 'E681';
-        $api->secretkey = 'SCpQ3x';
-        $api->url = 'https://swmd.6633663.com/';
-        $api->save();
+        Api::updateOrCreate(
+            ['id' => 1],
+            [
+                'nx_agent_code' => env('GGR_AGENT_CODE', 'akurat77'),
+                'nx_token' => env('GGR_AGENT_TOKEN', 'd90e23be49fc8b08065acf6a0473214e'),
+                'nx_endpoint' => env('GGR_API_URL', 'https://api.nexusggr.com'),
+                'nx_status' => 1,
+                'sg_status' => 0,
+                'wsg_status' => 0,
+                'ng_status' => 0,
+            ]
+        );
     }
 }

@@ -7,170 +7,233 @@ use Illuminate\Support\Facades\Log;
 
 class JayapayService
 {
-    private $merchantCode;
-    private $notifyUrl;
-    private $apiUrl;
-    private $privateKeyPath;
-    private $publicKeyPath;
+    private const PAYIN_SUCCESS_STATUSES = ['SUCCESS'];
+    private const PAYIN_FAILED_STATUSES = ['PAY_CANCEL', 'PAY_ERROR'];
+
+    private ?string $merchantCode;
+    private ?string $notifyUrl;
+    private string $apiUrl;
+    private string $queryUrl;
+    private string $privateKeyPath;
+    private string $publicKeyPath;
+    private string $caBundlePath;
 
     public function __construct()
     {
-        $this->merchantCode   = config('jayapay.merchant_code');
-        $this->notifyUrl      = config('jayapay.notify_url');
-        $this->apiUrl         = config('jayapay.api_url', 'https://partner.hetracks.com/gateway/prepaidOrder');
-        $this->privateKeyPath = base_path(config('jayapay.private_key_path', 'storage/app/private_pkcs8.pem'));
-        $this->publicKeyPath  = base_path(config('jayapay.public_key_path', 'storage/app/jayapay_public.pem'));
+        $this->merchantCode = config('jayapay.merchant_code');
+        $this->notifyUrl = config('jayapay.notify_url');
+        $this->apiUrl = config('jayapay.api_url', 'https://global-id-openapi.toppayment.com/id/pay/prePay');
+        $this->queryUrl = config('jayapay.query_url', 'https://global-id-openapi.toppayment.com/id/pay/query');
+        $this->privateKeyPath = base_path(config('jayapay.private_key_path', 'storage/app/toppayment_private.pem'));
+        $this->publicKeyPath = base_path(config('jayapay.public_key_path', 'storage/app/toppayment_public.pem'));
+        $this->caBundlePath = base_path(config('jayapay.ca_bundle_path', 'storage/app/cacert.pem'));
     }
 
-    /**
-     * 🧾 Buat transaksi Jayapay (Cashier Mode JSON)
-     */
     public function createOrder(array $data): array
     {
         try {
             $payload = [
-                'merchantCode'  => $this->merchantCode,
-                'orderType'     => '0', // default cashier mode
-                'method'        => $data['method'] ?? 'QRIS',
-                'orderNum'      => $data['orderNum'],
-                'payMoney'      => (int) $data['amount'],
+                'mchNo' => $this->merchantCode,
+                'orderNum' => $data['orderNum'],
+                'amount' => (int) $data['amount'],
                 'productDetail' => $data['productDetail'],
-                'notifyUrl'     => $this->notifyUrl,
-                'dateTime'      => now()->format('YmdHis'),
-                'expiryPeriod'  => 1440,
-                'name'          => $data['name'] ?? 'Customer',
-                'email'         => $data['email'] ?? 'customer@example.com',
-                'phone'         => $data['phone'] ?? '0000000000',
+                'method' => $data['method'] ?? 'QRIS',
+                'timestamp' => (string) now()->valueOf(),
+                'customerName' => $data['name'] ?? 'Customer',
+                'customerEmail' => $data['email'] ?? 'customer@example.com',
+                'customerPhone' => $data['phone'] ?? '0000000000',
+                'expiryPeriod' => $data['expiryPeriod'] ?? 1440,
+                'downNotifyUrl' => $data['notifyUrl'] ?? $this->notifyUrl,
+                'redirectUrl' => $data['returnUrl'] ?? url('/account/deposit'),
+                'notifyVersion' => $data['notifyVersion'] ?? 'v2',
             ];
 
-            // 🔏 Generate signature
             $payload['sign'] = $this->generateSign($payload);
 
-            Log::info('📤 Request Jayapay (payload)', $payload);
+            Log::info('TopPayment create payload prepared', [
+                'orderNum' => $payload['orderNum'] ?? null,
+                'amount' => $payload['amount'] ?? null,
+                'method' => $payload['method'] ?? null,
+                'has_sign' => filled($payload['sign'] ?? null),
+            ]);
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])
+            $response = $this->http()
                 ->timeout(30)
                 ->post($this->apiUrl, $payload);
 
-            $body = $response->json();
+            $body = $response->json() ?: [];
 
             if ($response->failed()) {
-                Log::error('⚠️ Gagal kirim ke Jayapay', [
+                Log::error('TopPayment create failed', [
                     'status' => $response->status(),
-                    'body'   => $response->body(),
+                    'response_keys' => is_array($body) ? array_keys($body) : [],
                 ]);
-                return [
-                    'success' => false,
-                    'message' => 'Gagal mengirim request ke Jayapay',
-                    'response' => $body,
-                ];
+
+                return ['success' => false, 'message' => 'Gagal mengirim request ke TopPayment', 'response' => $body];
             }
 
-            Log::info('📥 Response Jayapay', $body);
+            $payData = data_get($body, 'data.payData');
+            $payDataType = strtoupper((string) data_get($body, 'data.payDataType'));
+            $paymentUrl = data_get($body, 'data.cashierUrl') ?? $body['url'] ?? $body['payUrl'] ?? null;
 
-            // 🟩 Tambahkan handle untuk url/payUrl
+            if (!$paymentUrl && in_array($payDataType, ['QR_URL', 'CASHIER_URL'], true)) {
+                $paymentUrl = $payData;
+            }
+
             return [
-                'success'  => ($body['platRespCode'] ?? '') === 'SUCCESS',
-                'url'      => $body['url'] ?? $body['payUrl'] ?? null,
-                'message'  => $body['platRespMessage'] ?? null,
+                'success' => ($body['success'] ?? false) === true || (string) ($body['code'] ?? '') === '9999',
+                'url' => $paymentUrl,
+                'qris_url' => $paymentUrl,
+                'qris_code' => $payDataType === 'QR_CODE' ? $payData : null,
+                'pay_data' => $payData,
+                'pay_data_type' => $payDataType ?: null,
+                'platform_order_num' => data_get($body, 'data.platOrderNum'),
+                'message' => $body['msg'] ?? $body['platRespMessage'] ?? $body['message'] ?? null,
                 'response' => $body,
             ];
-
-        } catch (\Exception $e) {
-            Log::error('❌ Exception Jayapay', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return [
-                'success' => false,
-                'message' => $e->getMessage(),
-            ];
+        } catch (\Throwable $e) {
+            Log::error('TopPayment create exception', ['error' => $e->getMessage()]);
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 
-    /**
-     * 🔐 Generate signature RSA “privateEncrypt” (sesuai util Java Jayapay)
-     */
+    public function queryOrder(string $orderNum): array
+    {
+        try {
+            $payload = [
+                'mchNo' => $this->merchantCode,
+                'orderNum' => $orderNum,
+                'timestamp' => (string) now()->valueOf(),
+            ];
+            $payload['sign'] = $this->generateSign($payload);
+
+            $response = $this->http()
+                ->timeout(30)
+                ->post($this->queryUrl, $payload);
+
+            $body = $response->json() ?: [];
+
+            if ($response->failed()) {
+                Log::warning('TopPayment query failed', [
+                    'orderNum' => $orderNum,
+                    'status' => $response->status(),
+                    'response_keys' => is_array($body) ? array_keys($body) : [],
+                ]);
+
+                return ['success' => false, 'paid' => false, 'message' => 'Query gagal', 'response' => $body];
+            }
+
+            $apiSuccess = ($body['success'] ?? false) === true || (string) ($body['code'] ?? '') === '9999';
+            $status = strtoupper((string) (data_get($body, 'data.status') ?? $body['status'] ?? ''));
+            $paid = $apiSuccess && in_array($status, self::PAYIN_SUCCESS_STATUSES, true);
+            $failed = $apiSuccess && in_array($status, self::PAYIN_FAILED_STATUSES, true);
+
+            return [
+                'success' => $apiSuccess,
+                'paid' => $paid,
+                'failed' => $failed,
+                'status' => $status,
+                'message' => $body['msg'] ?? $body['platRespMessage'] ?? $body['message'] ?? null,
+                'response' => $body,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('TopPayment query exception', ['orderNum' => $orderNum, 'error' => $e->getMessage()]);
+            return ['success' => false, 'paid' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     private function generateSign(array $data): string
     {
-        // Urutkan seperti Collections.sort di Java
-        ksort($data);
-        $stringToSign = implode('', $data);
+        $stringToSign = $this->stringToSign($data);
 
         if (!file_exists($this->privateKeyPath)) {
-            Log::error('❌ Private key tidak ditemukan', ['path' => $this->privateKeyPath]);
+            Log::error('TopPayment private key missing', ['path' => $this->privateKeyPath]);
             return '';
         }
 
-        $privateKeyContent = file_get_contents($this->privateKeyPath);
-        $privateKey = openssl_pkey_get_private($privateKeyContent);
-
+        $privateKey = openssl_pkey_get_private(file_get_contents($this->privateKeyPath));
         if (!$privateKey) {
-            Log::error('❌ Gagal load private key', ['error' => openssl_error_string()]);
+            Log::error('TopPayment private key invalid', ['error' => openssl_error_string()]);
             return '';
         }
 
-        // Enkripsi gaya Java privateEncrypt
-        $dataBytes = mb_convert_encoding($stringToSign, 'UTF-8');
-        $keyDetails = openssl_pkey_get_details($privateKey);
-        $blockSize = $keyDetails['bits'] / 8 - 11; // 117 untuk 1024-bit
-        $chunks = str_split($dataBytes, $blockSize);
-
+        $details = openssl_pkey_get_details($privateKey);
+        $blockSize = (int) (($details['bits'] / 8) - 11);
         $encrypted = '';
-        foreach ($chunks as $chunk) {
+
+        foreach (str_split($stringToSign, $blockSize) as $chunk) {
             $partial = '';
             if (!openssl_private_encrypt($chunk, $partial, $privateKey, OPENSSL_PKCS1_PADDING)) {
-                Log::error('❌ Gagal encrypt sebagian data', ['error' => openssl_error_string()]);
+                Log::error('TopPayment sign encrypt failed', ['error' => openssl_error_string()]);
                 return '';
             }
             $encrypted .= $partial;
         }
 
-        openssl_free_key($privateKey);
         return base64_encode($encrypted);
     }
 
-    /**
-     * ✅ Verifikasi callback dari Jayapay
-     */
+    private function http()
+    {
+        $client = Http::asJson();
+
+        if (file_exists($this->caBundlePath)) {
+            $client = $client->withOptions(['verify' => $this->caBundlePath]);
+        }
+
+        return $client;
+    }
+
     public function verifyCallback(array $data): bool
     {
-        if (!isset($data['sign'])) {
+        if (empty($data['sign'])) {
             return false;
         }
 
-        $sign = base64_decode($data['sign']);
+        $sign = base64_decode((string) $data['sign'], true);
         unset($data['sign']);
+        ksort($data);
+        $stringToVerify = $this->stringToSign($data);
 
-        $fields = [
-            'merchantCode', 'orderType', 'method', 'orderNum',
-            'payMoney', 'productDetail', 'notifyUrl', 'dateTime',
-            'expiryPeriod', 'name', 'email', 'phone'
-        ];
-
-        $stringToVerify = '';
-        foreach ($fields as $f) {
-            $stringToVerify .= $data[$f] ?? '';
-        }
-
-        if (!file_exists($this->publicKeyPath)) {
-            Log::error('❌ Public key tidak ditemukan', ['path' => $this->publicKeyPath]);
+        if (!$sign || !file_exists($this->publicKeyPath)) {
+            Log::error('TopPayment callback public key/sign missing', ['path' => $this->publicKeyPath]);
             return false;
         }
 
-        $publicKeyContent = file_get_contents($this->publicKeyPath);
-        $publicKey = openssl_pkey_get_public($publicKeyContent);
-
+        $publicKey = openssl_pkey_get_public(file_get_contents($this->publicKeyPath));
         if (!$publicKey) {
-            Log::error('❌ Gagal load public key', ['error' => openssl_error_string()]);
+            Log::error('TopPayment public key invalid', ['error' => openssl_error_string()]);
             return false;
         }
 
-        $isValid = openssl_verify($stringToVerify, $sign, $publicKey, OPENSSL_ALGO_SHA256);
-        openssl_free_key($publicKey);
+        $details = openssl_pkey_get_details($publicKey);
+        $blockSize = (int) ($details['bits'] / 8);
+        $decrypted = '';
 
-        return $isValid === 1;
+        foreach (str_split($sign, $blockSize) as $chunk) {
+            $partial = '';
+            if (!openssl_public_decrypt($chunk, $partial, $publicKey, OPENSSL_PKCS1_PADDING)) {
+                Log::error('TopPayment callback decrypt failed', ['error' => openssl_error_string()]);
+                return false;
+            }
+            $decrypted .= $partial;
+        }
+
+        return hash_equals($stringToVerify, $decrypted);
+    }
+
+    private function stringToSign(array $data): string
+    {
+        unset($data['sign']);
+        ksort($data, SORT_STRING);
+
+        $string = '';
+        foreach ($data as $value) {
+            if ($value !== null && $value !== '') {
+                $string .= is_bool($value) ? ($value ? 'true' : 'false') : (string) $value;
+            }
+        }
+
+        return $string;
     }
 }

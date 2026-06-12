@@ -42,11 +42,15 @@ class HistoryPlayController extends Controller
         try {
             $username = (string) $request->input('extplayer');
             $gameType = (string) ($request->input('game_type') ?: 'slot');
-            $dateStart = $request->input('date_start') ?: now()->subDays(7)->format('Y-m-d');
-            $dateEnd = $request->input('date_end') ?: now()->format('Y-m-d');
+            $dateStart = $request->input('date_start')
+                ? \Carbon\Carbon::parse($request->input('date_start'))->startOfDay()->format('Y-m-d H:i:s')
+                : now()->subDays(7)->startOfDay()->format('Y-m-d H:i:s');
+            $dateEnd = $request->input('date_end')
+                ? \Carbon\Carbon::parse($request->input('date_end'))->endOfDay()->format('Y-m-d H:i:s')
+                : now()->endOfDay()->format('Y-m-d H:i:s');
 
             $fiver = new fiver();
-            $responseRaw = $fiver->historyPlay($username, $gameType, $dateStart, $dateEnd, 1, 200);
+            $responseRaw = $fiver->historyPlay($username, $gameType, $dateStart, $dateEnd, 0, 200);
 
             if ($responseRaw === false || $responseRaw === null || $responseRaw === '') {
                 return response()->json([
@@ -128,6 +132,8 @@ class HistoryPlayController extends Controller
             'slots',
             'casino',
             'live',
+            'SB',
+            'sb',
             'sport',
             'sports',
             'history',

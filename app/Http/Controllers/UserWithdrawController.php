@@ -10,8 +10,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Api\softgaming;
 use App\Models\Network;
+use App\Models\Setting;
 
 class UserWithdrawController extends Controller
 {
@@ -25,8 +25,9 @@ class UserWithdrawController extends Controller
         $saldos = $act->user->balance ?? '0';
 
         $rek = Auth::user();
+        $setting = Setting::first();
 
-        return view('account.withdraw', compact('saldos', 'rek'));
+        return view('account.withdraw', compact('saldos', 'rek', 'setting'));
     }
 
     /**
@@ -44,15 +45,17 @@ class UserWithdrawController extends Controller
         }
 
         // Validasi input
+        $setting = Setting::first();
         $validatedData = $request->validate([
-            'amount' => 'required|numeric|min:1000',
+            'amount' => 'required|numeric|min:' . (int) ($setting->minimal_wd ?? 1000) . '|max:' . (int) ($setting->maksimal_wd ?? 10000000),
             'acc_no' => 'required|string'
         ]);
 
         $amount = intval($request->amount);
 
+        $transId = getTrx();
         $SG = new fiver();
-        $act = json_decode($SG->withdraw(Auth()->user()->name, $amount), true);
+        $act = json_decode($SG->withdraw(Auth()->user()->name, $amount, $transId), true);
 
         // Revisi pengecekan status Fiver
         if (isset($act['status']) && in_array($act['status'], [1, '1', 'success', 'SUCCESS'], true)) {
@@ -60,7 +63,8 @@ class UserWithdrawController extends Controller
             $transaksi = new Transaksi();
             $transaksi->type = 2;
             $transaksi->status = 1;
-            $transaksi->trans_id = getTrx();
+            $transaksi->trans_id = $transId;
+            $transaksi->external_id = $transId;
             $transaksi->user_name = Auth::user()->name;
             $transaksi->nominal = $amount;
             $transaksi->rek_pengirim = $request->acc_no ?? Auth::user()->no_rek;
@@ -104,7 +108,7 @@ class UserWithdrawController extends Controller
 
         if ($request->status == 3 && $transaksi->type == 2) {
             $SG = new fiver();
-            $act = json_decode($SG->deposit($User->name, $transaksi->nominal));
+            $act = json_decode($SG->deposit($User->name, $transaksi->nominal, 'refund-' . $transaksi->trans_id));
 
             if (isset($act->status) && in_array($act->status, [1, '1', 'success', 'SUCCESS'], true)) {
                 $actBalance = json_decode($SG->userbalance($User->name));

@@ -182,4 +182,3 @@ var __webpack_exports__ = {};
 /******/ })()
 ;
 });
-//# sourceMappingURL=summernote-ar-AR.js.map

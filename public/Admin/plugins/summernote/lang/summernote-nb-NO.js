@@ -180,4 +180,3 @@ var __webpack_exports__ = {};
 /******/ })()
 ;
 });
-//# sourceMappingURL=summernote-nb-NO.js.map

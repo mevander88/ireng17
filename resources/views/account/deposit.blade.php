@@ -49,6 +49,40 @@
                         </div>
                     </div>
 
+                    @if (!empty($pendingDeposit))
+                        <div class="ggr-account-panel ggr-pending-deposit-panel">
+                            <div class="ggr-deposit-step">
+                                <span>!</span>
+                                <div>
+                                    <h2>Deposit pending</h2>
+                                    <p>Order {{ $pendingDeposit->trans_id }} masih menunggu pembayaran. Selesaikan dulu sebelum membuat deposit baru.</p>
+                                </div>
+                            </div>
+                            <div class="ggr-payment-summary">
+                                <div>
+                                    <span>Nominal</span>
+                                    <strong>Rp {{ number_format((int) $pendingDeposit->nominal, 0, ',', '.') }}</strong>
+                                </div>
+                                <div>
+                                    <span>Dibuat</span>
+                                    <strong>{{ optional($pendingDeposit->created_at)->format('d/m/Y H:i') }}</strong>
+                                </div>
+                            </div>
+                            <div class="ggr-form-actions">
+                                @if (!empty($pendingDeposit->qris_url))
+                                    <a class="ggr-btn ggr-btn-primary" href="{{ $pendingDeposit->qris_url }}">
+                                        <span class="material-symbols-outlined">qr_code_2</span>
+                                        Bayar Sekarang
+                                    </a>
+                                @endif
+                                <a class="ggr-btn" href="{{ url('/account/lastDirectTransfer') }}">
+                                    <span class="material-symbols-outlined">receipt_long</span>
+                                    Lihat Transaksi
+                                </a>
+                            </div>
+                        </div>
+                    @else
+
                     <form class="ggr-account-panel ggr-deposit-panel" action="{{ url('/account/deposit') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
@@ -171,6 +205,7 @@
                             </a>
                         </div>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>

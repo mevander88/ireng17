@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class Transaksi extends Model
 {
@@ -23,6 +24,14 @@ class Transaksi extends Model
     public function Bonus()
     {
         return $this->belongsTo(Bonus::class, 'bonus_id');
+    }
+
+    public function scopeActivePendingDepositForUser(Builder $query, int $userId, int $delayHours = 24): Builder
+    {
+        return $query->where('user_id', $userId)
+            ->where('type', 1)
+            ->where('status', 1)
+            ->where('created_at', '>=', now()->subHours($delayHours));
     }
 
     #region dashboard

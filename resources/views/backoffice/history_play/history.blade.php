@@ -32,9 +32,8 @@
                 <label for="game_type">Game Type</label>
                 <select name="game_type" class="form-control" id="game_type">
                     <option value="slot">Slot</option>
-                    <option value="casino">Casino</option>
                     <option value="live">Live</option>
-                    <option value="sport">Sport</option>
+                    <option value="SB">Sportsbook</option>
                 </select>
             </div>
             <div class="admin-filter-fields">

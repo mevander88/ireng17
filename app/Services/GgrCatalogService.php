@@ -157,31 +157,36 @@ class GgrCatalogService
     public function syncProviders(): array
     {
         $response = $this->callProviderList();
+        $providers = $this->extractItems($response, ['providers', 'provider_list', 'providerList', 'data']);
 
-        if ((int) ($response['status'] ?? 0) !== 1 || empty($response['providers'])) {
+        if (!$this->responseIsOk($response) || $providers === []) {
             return [
                 'ok' => false,
-                'message' => $response['msg'] ?? 'Provider API belum mengembalikan data.',
+                'message' => $this->responseMessage($response, 'Provider API belum mengembalikan data.'),
                 'synced' => 0,
             ];
         }
 
         $synced = 0;
 
-        foreach ($response['providers'] as $provider) {
-            if (empty($provider['code']) || empty($provider['name'])) {
+        foreach ($providers as $provider) {
+            $provider = (array) $provider;
+            $codeValue = (string) ($provider['code'] ?? $provider['provider_code'] ?? $provider['providerCode'] ?? '');
+            $nameValue = (string) ($provider['name'] ?? $provider['provider_name'] ?? $provider['providerName'] ?? $codeValue);
+
+            if ($codeValue === '' || $nameValue === '') {
                 continue;
             }
 
-            $code = strtoupper((string) $provider['code']);
+            $code = strtoupper($codeValue);
 
             GgrProvider::updateOrCreate(
-                ['code' => $provider['code']],
+                ['code' => $code],
                 [
-                    'name' => $provider['name'],
+                    'name' => $nameValue,
                     'type' => (string) ($provider['type'] ?? 'slot'),
                     'is_open' => !in_array($code, self::EXCLUDED_PROVIDER_CODES, true)
-                        && (int) ($provider['status'] ?? 0) === 1,
+                        && (int) ($provider['status'] ?? 1) === 1,
                     'synced_at' => now(),
                 ]
             );
@@ -197,7 +202,13 @@ class GgrCatalogService
     public function syncGames(?string $providerCode = null, int $maxProviders = 12): array
     {
         if (GgrProvider::count() === 0) {
-            $this->syncProviders();
+            $providerResult = $this->syncProviders();
+
+            if (!($providerResult['ok'] ?? false)) {
+                return [
+                    '_providers' => $providerResult,
+                ];
+            }
         }
 
         $providers = GgrProvider::query()
@@ -225,33 +236,44 @@ class GgrCatalogService
     public function syncProviderGames(GgrProvider $provider): array
     {
         $response = $this->callGameList($provider->code);
+        $games = $this->extractItems($response, ['games', 'gamelist', 'game_list', 'gameList', 'data']);
 
-        if ((int) ($response['status'] ?? 0) !== 1 || !isset($response['games']) || !is_array($response['games'])) {
+        if (!$this->responseIsOk($response) || $games === []) {
             return [
                 'ok' => false,
-                'message' => $response['msg'] ?? 'Game API belum mengembalikan data.',
+                'message' => $this->responseMessage($response, 'Game API belum mengembalikan data.'),
                 'synced' => 0,
             ];
         }
 
         $synced = 0;
 
-        foreach ($response['games'] as $game) {
-            if (empty($game['game_name'])) {
+        foreach ($games as $game) {
+            $game = (array) $game;
+            $gameCode = (string) ($game['game_code'] ?? $game['gameCode'] ?? $game['code'] ?? $game['id'] ?? '');
+            $gameName = (string) ($game['game_name'] ?? $game['gameName'] ?? $game['name'] ?? $gameCode);
+
+            if ($gameName === '') {
                 continue;
             }
 
             GgrGame::updateOrCreate(
                 [
                     'provider_code' => $provider->code,
-                    'game_code' => (string) ($game['game_code'] ?? ''),
+                    'game_code' => $gameCode,
                 ],
                 [
                     'ggr_provider_id' => $provider->id,
-                    'game_name' => $game['game_name'],
+                    'game_name' => $gameName,
                     'type' => $provider->type,
-                    'banner' => $game['banner'] ?? null,
-                    'is_open' => (int) ($game['status'] ?? 0) === 1,
+                    'banner' => $game['banner']
+                        ?? $game['game_image']
+                        ?? $game['gameImage']
+                        ?? $game['image']
+                        ?? $game['img']
+                        ?? $game['icon']
+                        ?? null,
+                    'is_open' => (int) ($game['status'] ?? 1) === 1,
                     'synced_at' => now(),
                 ]
             );
@@ -284,5 +306,49 @@ class GgrCatalogService
             Log::warning('GGR game_list failed', ['provider' => $providerCode, 'error' => $exception->getMessage()]);
             return [];
         }
+    }
+
+    private function extractItems(array $response, array $keys): array
+    {
+        if (array_is_list($response)) {
+            return $response;
+        }
+
+        foreach ($keys as $key) {
+            if (isset($response[$key]) && is_array($response[$key])) {
+                return array_values($response[$key]);
+            }
+        }
+
+        if (isset($response['data']) && is_array($response['data'])) {
+            foreach ($keys as $key) {
+                if (isset($response['data'][$key]) && is_array($response['data'][$key])) {
+                    return array_values($response['data'][$key]);
+                }
+            }
+        }
+
+        return [];
+    }
+
+    private function responseIsOk(array $response): bool
+    {
+        if (!array_key_exists('status', $response)) {
+            return true;
+        }
+
+        return (int) $response['status'] === 1;
+    }
+
+    private function responseMessage(array $response, string $fallback): string
+    {
+        return (string) (
+            $response['msg']
+            ?? $response['message']
+            ?? $response['error']
+            ?? $response['data']['msg']
+            ?? $response['data']['message']
+            ?? $fallback
+        );
     }
 }

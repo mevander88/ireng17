@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ImageCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -63,7 +64,7 @@ class GgrProvider extends Model
             return asset($fallback);
         }
 
-        return $this->coverGame?->safe_banner;
+        return ImageCache::url($this->coverGame?->banner);
     }
 
     public function getHasOfficialCoverFallbackAttribute(): bool

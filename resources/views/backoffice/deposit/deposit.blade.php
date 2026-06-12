@@ -44,7 +44,7 @@
                             <td>{{ $transaksis->rek_pengirim ?? '-' }}</td>
                             <td>
                                 @if ($transaksis->qris_url || $transaksis->approved_by == 'jayapay_auto')
-                                    QRIS (Jayapay)
+                                    QRIS (TopPayment)
                                 @elseif ($transaksis->type == 1)
                                     Manual
                                 @else

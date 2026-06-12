@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Api\fiver;
-use App\Http\Api\softgaming;
-use App\Models\Fiver_Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

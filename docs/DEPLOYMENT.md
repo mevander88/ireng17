@@ -92,7 +92,7 @@ Ada dua sumber konfigurasi API:
    - `GGR_API_URL`
    - `GGR_AGENT_CODE`
    - `GGR_AGENT_TOKEN`
-   - `JAYAPAY_*`
+   - `TOPPAYMENT_*` / `JAYAPAY_*` alias
 
 2. Database table `api`
    - `nx_agent_code`
@@ -102,25 +102,28 @@ Ada dua sumber konfigurasi API:
 
 Class legacy `App\Http\Api\fiver` membaca data dari table `api`, bukan dari `.env`.
 Pastikan row pertama table `api` sudah berisi endpoint, agent code, dan token yang benar.
+Sesuai dokumentasi GGR, `nx_endpoint` harus diisi dari halaman profile agent:
+`https://{SERVER}/app/profile` bagian `API Endpoint`. Dokumentasi tidak menetapkan domain API publik statis.
 
 ## 7. Payment Gateway
 
-Jayapay membaca konfigurasi dari `.env` lewat `config/jayapay.php`.
+TopPayment dibaca dari `.env` lewat `config/jayapay.php`. Prefix `JAYAPAY_*` masih dipertahankan sebagai alias kompatibilitas.
 
 Minimal:
 
 ```env
-JAYAPAY_MERCHANT_CODE=
-JAYAPAY_PRIVATE_KEY_PATH=storage/app/private_pkcs8.pem
-JAYAPAY_PUBLIC_KEY_PATH=storage/app/jayapay_public.pem
-JAYAPAY_API_URL=https://openapi.jayapayment.com/gateway/prepaidOrder
-JAYAPAY_NOTIFY_URL=https://domain-anda.com/api/jayapay/callback
+TOPPAYMENT_MERCHANT_CODE=TOP1B10124
+TOPPAYMENT_PRIVATE_KEY_PATH=storage/app/toppayment_private.pem
+TOPPAYMENT_PUBLIC_KEY_PATH=storage/app/toppayment_public.pem
+TOPPAYMENT_API_URL=https://global-id-openapi.toppayment.com/id/pay/prePay
+TOPPAYMENT_QUERY_URL=https://global-id-openapi.toppayment.com/id/pay/query
+TOPPAYMENT_NOTIFY_URL=https://domain-anda.com/api/jayapay/callback
 ```
 
 File key tidak ikut git. Upload manual ke:
 
-- `storage/app/private_pkcs8.pem`
-- `storage/app/jayapay_public.pem`
+- `storage/app/toppayment_private.pem`
+- `storage/app/toppayment_public.pem`
 
 ## 8. Storage dan Permission
 
@@ -181,5 +184,5 @@ Frontend membaca data katalog dari tabel lokal agar tidak berat.
 - Backoffice bisa login.
 - `users.level` admin benar.
 - Table `api` berisi credential game API.
-- Jayapay callback mengarah ke domain production.
+- TopPayment callback mengarah ke domain production.
 - Permission `storage` dan `bootstrap/cache` writable.

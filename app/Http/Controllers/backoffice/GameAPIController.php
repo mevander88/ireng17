@@ -4,14 +4,9 @@ namespace App\Http\Controllers\backoffice;
 
 use App\Http\Api\fiver;
 use App\Models\Setting;
-use App\Models\Game_api;
-use App\Models\Game_list;
-use App\Models\Fiver_Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Redirect;
 
 class GameAPIController extends Controller
 {

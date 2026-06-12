@@ -8,7 +8,6 @@ use App\Models\Spin;
 use App\Models\Saldo;
 use App\Models\Network;
 use App\Models\Voucher;
-use App\Models\DataBank;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
@@ -57,10 +56,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function DataBank()
-    {
-        return $this->hasMany(DataBank::class, 'bank_id', 'id');
-    }
     public function Network()
     {
         return $this->hasMany(Network::class);
@@ -68,7 +63,7 @@ class User extends Authenticatable
 
     public function Transaksi()
     {
-        return $this->hasMany(DataBank::class, 'user_id');
+        return $this->hasMany(Transaksi::class, 'user_id', 'id');
     }
     public function Saldo()
     {

@@ -21,6 +21,7 @@ class UserDepositController extends Controller
      */
     public function index()
     {
+        $setting = $this->settingRecord();
         $saldos = (float) (Saldo::where('user_id', Auth::id())->value('saldo') ?? 0);
 
         try {
@@ -42,16 +43,17 @@ class UserDepositController extends Controller
             'saldos'   => $saldos,
             'bank'     => Bank::where('type', 1)->orderByRaw('status = 1 DESC')->orderBy('nama_bank')->get(),
             'ewallet'  => Bank::where('type', 2)->orderByRaw('status = 1 DESC')->orderBy('nama_bank')->get(),
-            'setting'  => Setting::first(),
+            'setting'  => $setting,
+            'pendingDeposit' => Transaksi::activePendingDepositForUser(Auth::id(), (int) ($setting->deposit_delay ?? 24))->latest()->first(),
         ]);
     }
 
     /**
-     * 🔹 Proses buat deposit baru (manual atau Jayapay)
+     * 🔹 Proses buat deposit baru (manual atau TopPayment)
      */
     public function store(Request $request)
 {
-    $setting = Setting::first();
+    $setting = $this->settingRecord();
     $paymentType = (int) $request->input('payment_type', $request->input('type', 1));
 
     $request->merge([
@@ -73,6 +75,12 @@ class UserDepositController extends Controller
     ]);
 
     $nominal = (int) $request->nominal;
+    $pendingDeposit = Transaksi::activePendingDepositForUser(Auth::id(), (int) ($setting->deposit_delay ?? 24))->latest()->first();
+    if ($pendingDeposit) {
+        return redirect()
+            ->to('/account/deposit')
+            ->with('error', 'Masih ada deposit pending. Selesaikan pembayaran sebelumnya sebelum membuat deposit baru.');
+    }
 
     // Validasi minimal deposit
     if ($nominal < ($setting->minimal_depo ?? 20000)) {
@@ -86,7 +94,7 @@ class UserDepositController extends Controller
         }
     }
 
-    // Cek transaksi pending
+    // Cek transaksi pending lama dan tandai expired bila sudah melewati delay
     $delayHours = $setting->deposit_delay ?? 24;
     $lastTrans = Transaksi::where('user_id', Auth::id())
         ->where('type', 1)
@@ -128,7 +136,7 @@ class UserDepositController extends Controller
     $transaksi->ref = $network->ref_code ?? null;
     $transaksi->save();
 
-    // Jika transaksi menggunakan metode Jayapay
+    // Jika transaksi menggunakan metode TopPayment
     if ((int) $request->payment_type === 2) {
         try {
             $jayapay = new \App\Services\JayapayService();
@@ -139,21 +147,28 @@ class UserDepositController extends Controller
                 'name'           => Auth::user()->name,
                 'email'          => Auth::user()->email ?? '-',
                 'phone'          => Auth::user()->telp ?? Auth::user()->phone ?? '-',
-                'productDetail'  => 'Deposit via Jayapay',
+                'productDetail'  => 'Deposit via TopPayment',
             ];
 
             $response = $jayapay->createOrder($orderData);
-            Log::info('🧾 Jayapay createOrder response', $response);
+            Log::info('TopPayment createOrder response', [
+                'order' => $transaksi->trans_id,
+                'success' => $response['success'] ?? false,
+                'message' => $response['message'] ?? null,
+                'has_url' => !empty($response['qris_url'] ?? $response['url'] ?? null),
+            ]);
 
             $payUrl = $response['qris_url']
                 ?? $response['url']
+                ?? data_get($response, 'response.data.cashierUrl')
+                ?? data_get($response, 'response.data.payData')
                 ?? data_get($response, 'response.url')
                 ?? data_get($response, 'response.payUrl');
 
             if (!empty($payUrl)) {
                 $transaksi->update([
                     'qris_url' => $payUrl,
-                    'external_id' => $transaksi->trans_id,
+                    'external_id' => $response['platform_order_num'] ?? data_get($response, 'response.data.platOrderNum') ?? $transaksi->trans_id,
                 ]);
 
                 return redirect()->away($payUrl);
@@ -162,9 +177,9 @@ class UserDepositController extends Controller
             $transaksi->update(['status' => 3, 'alasan' => $response['message'] ?? 'Gateway tidak mengembalikan URL pembayaran.']);
             return back()->with('error', $response['message'] ?? $response['msg'] ?? 'Gagal membuat transaksi QRIS otomatis.');
         } catch (\Throwable $e) {
-            Log::error('💥 Jayapay error: ' . $e->getMessage());
+            Log::error('TopPayment create error: ' . $e->getMessage());
             $transaksi->update(['status' => 3, 'alasan' => 'Kesalahan sistem gateway.']);
-            return back()->with('error', 'Terjadi kesalahan pada sistem Jayapay.');
+            return back()->with('error', 'Terjadi kesalahan pada sistem pembayaran.');
         }
     }
 
@@ -172,103 +187,7 @@ class UserDepositController extends Controller
 }
 
 
-    /**
-     * 🔹 Callback dari Jayapay (notifikasi otomatis)
-     */
-    public function callback(Request $request)
-{
-    Log::info('🔔 Jayapay Callback diterima:', $request->all());
-
-    try {
-        $orderNum = $request->input('orderNum') ?? $request->input('merchantOrderNo') ?? $request->input('ref');
-        $status   = strtoupper((string) ($request->input('status') ?? $request->input('platRespCode') ?? ''));
-        $amount   = (int) $request->input('amount');
-
-        $trx = Transaksi::where('trans_id', $orderNum)->first();
-        if (!$trx) {
-            Log::warning("⚠️ Transaksi Jayapay tidak ditemukan: {$orderNum}");
-            return response('Order not found', 404);
-        }
-
-        if (in_array($status, ['SUCCESS', '1', '0000'], true)) {
-            $user = User::find($trx->user_id);
-            if (!$user) {
-                Log::error("❌ User tidak ditemukan untuk transaksi {$orderNum}");
-                return response('User not found', 404);
-            }
-
-            $SG = new fiver();
-            $bonusTotal = $trx->bonus_id
-                ? $trx->nominal + ($trx->nominal * $trx->bonus_persentase / 100)
-                : $trx->nominal;
-
-            Log::info("💰 Proses auto-approve deposit Jayapay untuk {$user->name}", [
-                'trx_id' => $trx->id,
-                'jumlah' => $bonusTotal
-            ]);
-
-            $depositResponse = json_decode($SG->deposit($user->name, $bonusTotal));
-            Log::info("📨 Respon Fiver (deposit Jayapay):", (array)$depositResponse);
-
-            if (in_array($depositResponse->status ?? null, [1, '1', 'success', 'SUCCESS'], true)) {
-                // Tunggu saldo update di Fiver
-                sleep(2);
-
-                $balance = json_decode($SG->userbalance($user->name));
-                $newBalance = $balance->user->balance ?? null;
-
-                if ($newBalance !== null) {
-                    // ✅ Update saldo lokal
-                    Saldo::updateOrCreate(
-                        ['user_id' => $user->id],
-                        ['saldo' => $newBalance, 'bonus' => $bonusTotal]
-                    );
-
-                    // ✅ Update status transaksi
-                    $trx->update([
-                        'status'       => 2,
-                        'approved_at'  => now(),
-                        'approved_by'  => 'jayapay_auto',
-                        'alasan'       => null,
-                    ]);
-
-                    // ✅ Catat ke tabel history
-                    DB::table('history')->insert([
-                        'user_id'     => $user->id,
-                        'trans_id'    => $trx->trans_id,
-                        'jumlah'      => $bonusTotal,
-                        'type'        => '1',
-                        'keterangan'  => 'Deposit otomatis via Jayapay',
-                        'created_at'  => now(),
-                        'updated_at'  => now(),
-                    ]);
-
-                    Log::info("✅ Jayapay Auto-Approve berhasil untuk {$user->name}");
-                } else {
-                    throw new \Exception('Tidak bisa mendapatkan saldo baru dari Fiver.');
-                }
-            } else {
-                throw new \Exception('Deposit ke Fiver gagal dilakukan.');
-            }
-        } else {
-            // ❌ Jika gagal atau expired
-            $trx->update(['status' => 3]);
-            Log::warning("❌ Pembayaran gagal atau dibatalkan untuk order {$orderNum}");
-        }
-
-        return response('OK', 200);
-
-    } catch (\Throwable $e) {
-        Log::error('💥 Jayapay Callback Error: ' . $e->getMessage());
-        return response('Error', 500);
-    }
-}
-
-
-    /**
-     * 🔹 Admin: Approve / Reject deposit manual
-     */
-    public function action(string $id, Request $request)
+        public function action(string $id, Request $request)
 {
     $trx = Transaksi::findOrFail($id);
     $user = User::findOrFail($trx->user_id);
@@ -288,7 +207,7 @@ class UserDepositController extends Controller
                 'trx_id' => $trx->id
             ]);
 
-            $res = json_decode($SG->deposit($user->name, $bonusTotal));
+            $res = json_decode($SG->deposit($user->name, $bonusTotal, $trx->trans_id));
             Log::info('📨 Respon dari Fiver (deposit):', (array) $res);
 
             if (in_array($res->status ?? null, [1, '1', 'success', 'SUCCESS'], true)) {
@@ -353,6 +272,17 @@ class UserDepositController extends Controller
         Log::error('❌ Deposit Action Error: ' . $e->getMessage());
         return back()->with('error', 'Terjadi kesalahan saat memperbarui transaksi.');
     }
+}
+
+private function settingRecord(): Setting
+{
+    return Setting::first() ?: new Setting([
+        'minimal_depo' => 20000,
+        'minimal_wd' => 50000,
+        'maksimal_wd' => 100000000,
+        'deposit_delay' => 24,
+        'qris_status' => 1,
+    ]);
 }
 
 }

@@ -1,4 +1,4 @@
-@extends('layouts.ggr', ['title' => 'Withdraw - ireng17'])
+@extends('layouts.ggr', ['title' => 'Withdraw - ' . ($setting->nama_web ?? 'ireng17')])
 
 @section('content')
     <section class="ggr-section">
@@ -47,8 +47,8 @@
                             <div class="ggr-form-grid">
                                 <div class="ggr-field">
                                     <label for="amount">Nominal Withdraw</label>
-                                    <input id="amount" name="amount" type="number" min="1000" step="1000" placeholder="50000" required>
-                                    <span class="ggr-field-help">Minimal Rp 1.000</span>
+                                    <input id="amount" name="amount" type="number" min="{{ (int) ($setting->minimal_wd ?? 1000) }}" step="1000" placeholder="50000" required>
+                                    <span class="ggr-field-help">Minimal Rp {{ number_format((int) ($setting->minimal_wd ?? 1000), 0, ',', '.') }}{{ !empty($setting->maksimal_wd) ? ' - Maksimal Rp ' . number_format((int) $setting->maksimal_wd, 0, ',', '.') : '' }}</span>
                                 </div>
 
                                 <div class="ggr-field">

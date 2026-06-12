@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ImageCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,6 @@ class GgrGame extends Model
             return null;
         }
 
-        return $this->banner;
+        return ImageCache::url($this->banner);
     }
 }

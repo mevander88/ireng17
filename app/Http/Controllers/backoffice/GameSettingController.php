@@ -184,6 +184,67 @@ class GameSettingController extends Controller
         }
     }
 
+    public function callHistory(Request $request)
+    {
+        $validated = $request->validate([
+            'offset' => 'nullable|integer|min:0',
+            'limit' => 'nullable|integer|min:1|max:500',
+        ]);
+
+        try {
+            $SG = new fiver();
+            $response = json_decode($SG->callHistory(
+                (int) ($validated['offset'] ?? 0),
+                (int) ($validated['limit'] ?? 100)
+            ), true) ?: [];
+
+            return response()->json($response);
+        } catch (\Throwable $e) {
+            Log::error('Error callHistory: ' . $e->getMessage());
+            return response()->json(['status' => 0, 'msg' => 'Gagal mengambil call history'], 500);
+        }
+    }
+
+    public function callCancel(Request $request)
+    {
+        $validated = $request->validate([
+            'call_id' => 'required|integer|min:1',
+        ]);
+
+        try {
+            $SG = new fiver();
+            $response = json_decode($SG->callCancel((int) $validated['call_id']), true) ?: [];
+
+            return response()->json($response);
+        } catch (\Throwable $e) {
+            Log::error('Error callCancel: ' . $e->getMessage());
+            return response()->json(['status' => 0, 'msg' => 'Gagal membatalkan call'], 500);
+        }
+    }
+
+    public function controlRtp(Request $request)
+    {
+        $validated = $request->validate([
+            'provider' => 'required|string|max:64',
+            'username' => 'required|string|max:255',
+            'rtp' => 'required|integer|min:1|max:95',
+        ]);
+
+        try {
+            $SG = new fiver();
+            $response = json_decode($SG->controlRtp(
+                $validated['provider'],
+                $validated['username'],
+                (int) $validated['rtp']
+            ), true) ?: [];
+
+            return response()->json($response);
+        } catch (\Throwable $e) {
+            Log::error('Error controlRtp: ' . $e->getMessage());
+            return response()->json(['status' => 0, 'msg' => 'Gagal mengubah target RTP'], 500);
+        }
+    }
+
     /**
      * Fetch game history dari database
      */

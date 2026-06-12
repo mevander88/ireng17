@@ -4220,6 +4220,11 @@ button[type="submit"] i {
 
 .ggr-admin-metric small {
   margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+
+.ggr-admin-endpoint {
+  font-size: 20px !important;
 }
 
 .ggr-admin-panel {
@@ -4473,6 +4478,11 @@ button[type="submit"] i {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--admin-muted);
   font-size: 12px;
+}
+
+.ggr-admin-panel-footer span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .ggr-admin-panel-footer .admin-pagination {
@@ -5005,4 +5015,78 @@ body.ireng-admin-dark .badge-light,
 body.ireng-admin-dark .list-group-item {
   background-color: transparent !important;
   color: var(--bo-text) !important;
+}
+
+.bo-setting-page .card-tabs > .card-header {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.bo-setting-page .nav-tabs {
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+
+.bo-setting-page .nav-tabs .nav-link {
+  white-space: nowrap;
+}
+
+.bo-setting-preview {
+  width: min(100%, 520px);
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--bo-border);
+  border-radius: 8px;
+  background: rgba(10, 10, 15, 0.72);
+  padding: 10px;
+}
+
+.bo-setting-preview img,
+.bo-setting-preview video {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.bo-setting-preview.is-popup {
+  max-width: 320px;
+}
+
+.bo-setting-preview.is-popup img,
+.bo-setting-preview.is-popup video {
+  max-height: 170px;
+}
+
+@media (max-width: 767.98px) {
+  .bo-setting-page {
+    margin-top: 8px !important;
+  }
+
+  .bo-setting-page > .col-12,
+  .bo-setting-page .card-body {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .bo-setting-page .row > [class*="col-6"],
+  .bo-setting-page .row > [class*="col-5"],
+  .bo-setting-page .row > [class*="col-7"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .bo-setting-page textarea.form-control {
+    min-height: 120px;
+  }
+
+  .bo-setting-page .btn {
+    width: 100%;
+  }
+
+  .bo-setting-page .alert {
+    font-size: 13px;
+  }
 }

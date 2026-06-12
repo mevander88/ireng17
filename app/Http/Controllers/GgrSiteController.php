@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
+use App\Models\BannerPromosi;
 use App\Services\GgrCatalogService;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class GgrSiteController extends Controller
@@ -15,7 +18,7 @@ class GgrSiteController extends Controller
     public function home()
     {
         $this->bootstrapCatalog();
-        $popularSlotGames = $this->catalog->popularSlotGames(24);
+        $popularSlotGames = $this->catalog->popularSlotGames(16);
 
         return view('ggr.home', [
             'setting' => Setting::first(),
@@ -23,7 +26,7 @@ class GgrSiteController extends Controller
             'liveProviders' => $this->catalog->providers('live'),
             'miniProviders' => $this->catalog->providers('MN'),
             'sportsProviders' => $this->catalog->providers('SB'),
-            'featuredGames' => $popularSlotGames->isNotEmpty() ? $popularSlotGames : $this->catalog->featuredGames(18),
+            'featuredGames' => $popularSlotGames->isNotEmpty() ? $popularSlotGames : $this->catalog->featuredGames(16),
             'homeBanners' => $this->homeBanners(),
         ]);
     }
@@ -61,6 +64,36 @@ class GgrSiteController extends Controller
         ]);
     }
 
+    public function promotion()
+    {
+        return view('promotion', [
+            'banners' => BannerPromosi::all(),
+        ]);
+    }
+
+    public function notFound()
+    {
+        abort(404);
+    }
+
+    public function usernamePhone(Request $request)
+    {
+        $username = base64_decode((string) $request->query('username', ''), true);
+        $phone = base64_decode((string) $request->query('phone', ''), true);
+
+        if ($username === false || $phone === false) {
+            return response()->json([
+                'username' => false,
+                'phone' => false,
+            ], 400);
+        }
+
+        return response()->json([
+            'username' => ! User::where('name', $username)->exists(),
+            'phone' => ! User::where('telp', $phone)->exists(),
+        ]);
+    }
+
     private function bootstrapCatalog(): void
     {
         if ($this->catalog->providers()->isEmpty()) {
@@ -71,6 +104,20 @@ class GgrSiteController extends Controller
 
     private function homeBanners(): array
     {
+        $databaseBanners = Banner::query()
+            ->where('status', '1')
+            ->whereNotNull('gambar')
+            ->where('gambar', '<>', '')
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn (Banner $banner): string => asset('storage/' . ltrim($banner->gambar, '/')))
+            ->all();
+
+        if ($databaseBanners !== []) {
+            return $databaseBanners;
+        }
+
         $directory = public_path('assets/images/home-banners');
 
         if (! is_dir($directory)) {
@@ -80,6 +127,7 @@ class GgrSiteController extends Controller
         return collect(glob($directory . DIRECTORY_SEPARATOR . '*.webp') ?: [])
             ->sort()
             ->values()
+            ->take(5)
             ->map(fn (string $path): string => asset('assets/images/home-banners/' . basename($path)))
             ->all();
     }

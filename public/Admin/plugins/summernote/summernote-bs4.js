@@ -10232,4 +10232,3 @@ var ui = function ui(editorOptions) {
 /******/ })()
 ;
 });
-//# sourceMappingURL=summernote-bs4.js.map

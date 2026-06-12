@@ -57,17 +57,32 @@
 @section('content')
     @php
         $heroGame = $featuredGames->first();
-        $carousel = $featuredGames->take(6);
-        $popularProviders = $slotProviders->take(10);
+        $carousel = $featuredGames->take(4);
+        $popularProviders = $slotProviders->take(8);
         $localBalance = auth()->check()
             ? (float) (\App\Models\Saldo::where('user_id', auth()->id())->value('saldo') ?? 0)
             : 0;
         $brandName = $setting->nama_web ?? 'ireng17';
+        $siteLogo = !empty($setting->logo)
+            ? asset('storage/' . $setting->logo)
+            : asset('assets/images/logo.png');
+        $popupMedia = !empty($setting->popup) ? asset('storage/' . $setting->popup) : $siteLogo;
+        $popupExtension = !empty($setting->popup) ? strtolower(pathinfo($setting->popup, PATHINFO_EXTENSION)) : null;
+        $popupMessage = trim((string) ($setting->msg_popup ?? ''));
+        $popupBackground = $setting->popup_bg ?: '#111111';
+        $popupEnabled = (int) ($setting->popup_enabled ?? 1) === 1;
+        $popupTitle = trim((string) ($setting->popup_title ?? '')) ?: strtoupper($brandName);
+        $popupCtaText = trim((string) ($setting->popup_cta_text ?? '')) ?: (auth()->check() ? 'Deposit' : 'Daftar Sekarang');
+        $popupCtaRaw = trim((string) ($setting->popup_cta_url ?? ''));
+        $popupCtaUrl = $popupCtaRaw !== ''
+            ? (\Illuminate\Support\Str::startsWith($popupCtaRaw, ['http://', 'https://']) ? $popupCtaRaw : url('/' . ltrim($popupCtaRaw, '/')))
+            : (auth()->check() ? url('/account/deposit') : url('/register'));
     @endphp
 
+    @if ($popupEnabled)
     <div class="ggr-home-popup" data-home-popup role="dialog" aria-modal="true" aria-labelledby="homePopupTitle" hidden>
         <button class="ggr-home-popup-backdrop" type="button" data-home-popup-close aria-label="Tutup popup"></button>
-        <div class="ggr-home-popup-panel" role="document">
+        <div class="ggr-home-popup-panel" role="document" style="--popup-bg: {{ $popupBackground }};">
             <button class="ggr-home-popup-close" type="button" data-home-popup-close aria-label="Tutup popup">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -75,9 +90,14 @@
             <div class="ggr-home-popup-copy">
                 <span class="ggr-kicker">{{ auth()->check() ? 'Promo Aktif' : 'Member Baru' }}</span>
                 <h2 id="homePopupTitle">
-                    IRENG17
+                    {{ $popupTitle }}
                 </h2>
-                @auth
+                @if ($popupMessage !== '')
+                    <div class="ggr-home-popup-note">
+                        {!! $popupMessage !!}
+                    </div>
+                @else
+                    @auth
                     <div class="ggr-home-popup-note">
                         <p>Saldo adalah kunci buat lanjut lebih nyaman di lobby IRENG17. Cek promo yang sedang aktif, pilih nominal deposit yang pas, lalu lanjutkan game favorit tanpa ribet pindah halaman.</p>
                         <p>Kalau putaran belum sesuai harapan, jangan kejar rugi. Atur batas main, isi saldo secukupnya, dan manfaatkan promo hanya saat memang sesuai rencana bermain Anda.</p>
@@ -87,14 +107,23 @@
                         <p>Gabung di IRENG17 dan mulai dari lobby yang sudah dirapikan untuk slot populer, provider pilihan, promo member, dan deposit cepat dalam satu alur yang ringan.</p>
                         <p>Kalau nanti saldo terasa kurang setelah bermain, isi ulang secukupnya sesuai batas Anda. Main lebih enak saat nominal deposit terkontrol, promo dicek dulu, dan pilihan game sudah siap dari awal.</p>
                     </div>
-                @endauth
+                    @endauth
+                @endif
             </div>
 
             <div class="ggr-home-popup-art ggr-home-popup-logo">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo {{ strtoupper($brandName) }}" loading="eager">
+                @if (in_array($popupExtension, ['mp4', 'webm']))
+                    <video src="{{ $popupMedia }}" autoplay muted loop playsinline></video>
+                @else
+                    <img src="{{ $popupMedia }}" alt="Popup {{ strtoupper($brandName) }}" loading="eager" decoding="async">
+                @endif
+            </div>
+            <div class="ggr-home-popup-actions">
+                <a class="ggr-btn ggr-btn-primary" href="{{ $popupCtaUrl }}">{{ $popupCtaText }}</a>
             </div>
         </div>
     </div>
+    @endif
 
     <section class="ggr-hero">
         @if (!empty($homeBanners))
@@ -103,7 +132,7 @@
                     <div class="ggr-home-slider-track">
                     @foreach ($homeBanners as $banner)
                         <article class="ggr-home-slide {{ $loop->first ? 'is-active' : '' }}" data-home-slide>
-                            <img src="{{ $banner }}" alt="Banner promosi {{ $brandName }} {{ $loop->iteration }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                            <img src="{{ $banner }}" alt="Banner promosi {{ $brandName }} {{ $loop->iteration }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async" fetchpriority="{{ $loop->first ? 'high' : 'low' }}">
                         </article>
                     @endforeach
                     </div>
@@ -173,7 +202,7 @@
                 @forelse ($carousel as $game)
                     <a class="ggr-feature-card" href="{{ url('/ggr/provider/' . \Illuminate\Support\Str::slug($game->provider_code)) }}">
                         @if ($game->safe_banner)
-                            <img src="{{ $game->safe_banner }}" alt="{{ $game->game_name }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                            <img src="{{ $game->safe_banner }}" alt="{{ $game->game_name }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async" fetchpriority="{{ $loop->first ? 'high' : 'low' }}">
                         @endif
                         <span class="ggr-feature-meta">
                             <span class="ggr-live-badge">{{ $loop->first ? 'Live Now' : $game->provider_code }}</span>
@@ -255,7 +284,7 @@
                     <a class="ggr-provider-card has-cover is-scroll-card" href="{{ url('/ggr/provider/' . \Illuminate\Support\Str::slug($provider->code)) }}">
                         <span class="ggr-provider-art {{ $coverUrl ? '' : 'is-empty' }}">
                             @if ($coverUrl)
-                                <img src="{{ $coverUrl }}" alt="{{ $provider->name }}" loading="lazy" onerror="this.remove(); this.parentElement.classList.add('is-empty');">
+                                <img src="{{ $coverUrl }}" alt="{{ $provider->name }}" loading="lazy" decoding="async" fetchpriority="low" onerror="this.remove(); this.parentElement.classList.add('is-empty');">
                             @else
                                 <span class="material-symbols-outlined">casino</span>
                             @endif
@@ -288,7 +317,7 @@
                         <span class="ggr-hot-badge">{{ $loop->first ? 'Hot' : 'New' }}</span>
                         <div class="ggr-game-media {{ $game->safe_banner ? '' : 'is-empty' }}">
                             @if ($game->safe_banner)
-                                <img src="{{ $game->safe_banner }}" alt="{{ $game->game_name }}" loading="lazy">
+                                <img src="{{ $game->safe_banner }}" alt="{{ $game->game_name }}" loading="lazy" decoding="async" fetchpriority="low">
                             @else
                                 <span class="material-symbols-outlined">casino</span>
                             @endif

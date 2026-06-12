@@ -5,8 +5,8 @@ namespace App\Http\Controllers\backoffice;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
@@ -18,8 +18,10 @@ class BannerController extends Controller
         $banner = Banner::query()
             ->latest()
             ->paginate(20);
+        $staticBanners = $this->staticHomeBanners();
+        $activeBannerCount = Banner::where('status', '1')->count();
 
-        return view('backoffice.banner.banner', compact('banner'));
+        return view('backoffice.banner.banner', compact('banner', 'staticBanners', 'activeBannerCount'));
     }
 
     /**
@@ -37,22 +39,18 @@ class BannerController extends Controller
     {
 
         $validateData  = $request->validate([
-
-            'gambar' => 'image|file|mimes:jpeg,png,webp,gif|max:4048',
-
-
+            'nama' => 'required|string|max:255',
+            'gambar' => 'required|image|file|mimes:jpeg,jpg,png,webp,gif|max:4096',
+            'status' => 'required|in:1,2',
         ]);
 
         if ($request->file('gambar')) {
-            $validateData['gambar'] = $request->file('gambar')->store('post-images');
+            $validateData['gambar'] = $request->file('gambar')->store('banner-home', 'public');
         }
 
 
-        $validateData['nama'] = $request->nama;
-        $validateData['status'] = $request->status;
-
         Banner::create($validateData);
-        return redirect()->back()->with('success', 'Data berhasil diubah');
+        return redirect()->back()->with('success', 'Banner berhasil ditambahkan.');
     }
 
     /**
@@ -76,17 +74,27 @@ class BannerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $banner = Banner::find($id);
+        $banner = Banner::findOrFail($id);
         if ($request->status != null) {
+            $request->validate(['status' => 'required|in:1,2']);
             $banner->status = $request->status;
         } else {
+            $request->validate([
+                'nama' => 'required|string|max:255',
+                'gambar' => 'nullable|image|file|mimes:jpeg,jpg,png,webp,gif|max:4096',
+            ]);
+
             $banner->nama = $request->nama;
             if ($request->hasFile('gambar')) {
-                $banner->gambar = $request->file('gambar')->store('post-images');
+                if ($banner->gambar && Storage::disk('public')->exists($banner->gambar)) {
+                    Storage::disk('public')->delete($banner->gambar);
+                }
+
+                $banner->gambar = $request->file('gambar')->store('banner-home', 'public');
             }
         }
         $banner->save();
-        return redirect()->back()->with('success', 'Data berhasil diubah');
+        return redirect()->back()->with('success', 'Banner berhasil diperbarui.');
     }
 
     /**
@@ -94,13 +102,32 @@ class BannerController extends Controller
      */
     public function destroy(string $id)
     {
-        $banner = Banner::find($id);
-        $file_path = public_path() . '/storage/post-images/' . $banner->gambar;
-        if (File::exists($file_path)) {
-            unlink($file_path);
+        $banner = Banner::findOrFail($id);
+
+        if ($banner->gambar && Storage::disk('public')->exists($banner->gambar)) {
+            Storage::disk('public')->delete($banner->gambar);
         }
-        $banner->save();
-        Banner::find($id)->delete();
-        return Redirect::to('banner');
+
+        $banner->delete();
+
+        return Redirect::to('banner')->with('success', 'Banner berhasil dihapus.');
+    }
+
+    private function staticHomeBanners(): array
+    {
+        $directory = public_path('assets/images/home-banners');
+
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        return collect(glob($directory . DIRECTORY_SEPARATOR . '*.webp') ?: [])
+            ->sort()
+            ->values()
+            ->map(fn (string $path): array => [
+                'name' => basename($path),
+                'url' => asset('assets/images/home-banners/' . basename($path)),
+            ])
+            ->all();
     }
 }

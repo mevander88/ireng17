@@ -10,11 +10,6 @@ class DataBank extends Model
     use HasFactory;
     protected $table = 'banks';
 
-    public function User()
-    {
-        return $this->belongsTo(User::class, 'bank_id', 'id');
-    }
-
     public function Transaksi()
     {
         return $this->hasMany(Transaksi::class, 'bank_id', 'id');

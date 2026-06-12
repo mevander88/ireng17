@@ -14,6 +14,7 @@ class Api extends Model
     'sg_endpoint',
     'nx_agent_code',
     'nx_token',
+    'nx_secret',
     'nx_endpoint',
     'wsg_agent_code',
     'wsg_token',

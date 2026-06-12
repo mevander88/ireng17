@@ -4,6 +4,9 @@
     @php
         $balance = data_get($agent, 'agent.balance', data_get($agent, 'balance', 0));
         $agentStatus = data_get($agent, 'status');
+        $apiEndpoint = trim((string) ($api->nx_endpoint ?? '')) ?: 'belum diset';
+        $apiAgentCode = $api->nx_agent_code ?? 'belum diset';
+        $apiActive = (int) ($api->nx_status ?? 0) === 1 && $apiEndpoint !== 'belum diset';
     @endphp
 
     <div class="ggr-admin-page">
@@ -25,6 +28,13 @@
                 <p>Data provider dan game dibaca dari tabel lokal agar frontend tetap ringan. Gunakan sync bertahap untuk menghindari rate limit GGR.</p>
             </div>
             <div class="ggr-admin-actions" aria-label="Aksi sinkronisasi katalog">
+                <form method="POST" action="{{ route('backoffice.ggr.testProviderApi') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-plug"></i>
+                        <span>Test API</span>
+                    </button>
+                </form>
                 <form method="POST" action="{{ route('backoffice.ggr.syncProviders') }}">
                     @csrf
                     <button type="submit" class="btn btn-outline-secondary btn-sm">
@@ -47,6 +57,11 @@
                 <span>Agent Balance</span>
                 <strong>{{ number_format((float) $balance, 2) }}</strong>
                 <small>Status API: {{ $agentStatus ?? 'tidak tersedia' }}</small>
+            </article>
+            <article class="ggr-admin-metric">
+                <span>NX Endpoint</span>
+                <strong class="ggr-admin-endpoint">{{ $apiActive ? 'Aktif' : 'Inactive' }}</strong>
+                <small>{{ $apiEndpoint }}</small>
             </article>
             <article class="ggr-admin-metric">
                 <span>Provider Aktif</span>
@@ -139,7 +154,7 @@
             </div>
 
             <div class="ggr-admin-panel-footer">
-                <span>Status API: {{ $agentStatus ?? 'tidak tersedia' }}</span>
+                <span>Agent: {{ $apiAgentCode }} | Endpoint: {{ $apiEndpoint }}</span>
                 <div class="admin-pagination">
                     {{ $providers->links() }}
                 </div>

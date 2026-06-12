@@ -6,7 +6,6 @@ use App\Http\Api\fiver;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Api\softgaming;
 
 class UserHistoryController extends Controller
 {

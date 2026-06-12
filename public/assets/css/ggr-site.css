@@ -279,6 +279,17 @@ img {
   aspect-ratio: 4 / 5;
 }
 
+.ggr-home-popup-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ggr-home-popup-actions .ggr-btn {
+  min-width: 180px;
+  justify-content: center;
+}
+
 .ggr-home-entry-btn {
   position: relative;
   overflow: hidden;
@@ -451,7 +462,6 @@ img {
   background: var(--gold);
 }
 
-.ggr-glass,
 .ggr-provider-card,
 .ggr-game-card,
 .ggr-balance-card,
@@ -676,12 +686,6 @@ img {
   border-color: rgba(255, 223, 159, 0.75);
   background: linear-gradient(135deg, var(--gold), var(--gold-soft), var(--gold));
   color: #261a00;
-}
-
-.ggr-btn-danger {
-  border-color: rgba(255, 143, 135, 0.34);
-  background: rgba(255, 143, 135, 0.1);
-  color: #ffdad6;
 }
 
 .ggr-main {
@@ -2877,6 +2881,16 @@ body.ggr-sidebar-open {
     max-height: 74%;
   }
 
+  .ggr-home-popup-actions {
+    order: 3;
+    justify-content: stretch;
+  }
+
+  .ggr-home-popup-actions .ggr-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
   .ggr-shell {
     width: calc(100% - 40px);
   }
@@ -3024,6 +3038,339 @@ body.ggr-sidebar-open {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Profile dashboard */
+.ggr-profile-content {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ggr-profile-head .ggr-btn {
+  min-width: 112px;
+}
+
+.ggr-profile-wallet {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid rgba(255, 223, 159, 0.2);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 198, 64, 0.13), rgba(208, 188, 255, 0.08)),
+    rgba(30, 32, 33, 0.78);
+  box-shadow: var(--shadow-purple);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.ggr-profile-wallet::after {
+  content: "";
+  position: absolute;
+  inset: auto -40px -82px auto;
+  width: 210px;
+  height: 210px;
+  border-radius: 999px;
+  background: rgba(255, 198, 64, 0.12);
+  pointer-events: none;
+}
+
+.ggr-profile-wallet-main,
+.ggr-profile-wallet-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.ggr-profile-wallet-main {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ggr-profile-wallet-main > strong {
+  color: var(--gold);
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 0.98;
+  overflow-wrap: anywhere;
+}
+
+.ggr-profile-status-row,
+.ggr-profile-wallet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ggr-profile-wallet-actions {
+  justify-content: flex-end;
+  min-width: min(100%, 260px);
+}
+
+.ggr-profile-wallet-actions .ggr-btn {
+  min-width: 120px;
+}
+
+.ggr-profile-deposit-cta {
+  min-height: 54px;
+  padding-inline: 22px;
+  box-shadow: 0 14px 34px rgba(255, 198, 64, 0.18);
+}
+
+.ggr-profile-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ggr-profile-quick-card {
+  min-height: 88px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(30, 32, 33, 0.72);
+  box-shadow: var(--shadow-purple);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.ggr-profile-quick-card:hover,
+.ggr-profile-quick-card:focus-visible {
+  border-color: rgba(255, 223, 159, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.ggr-profile-quick-card.is-primary {
+  border-color: rgba(255, 223, 159, 0.5);
+  background:
+    linear-gradient(135deg, rgba(255, 198, 64, 0.18), rgba(208, 188, 255, 0.08)),
+    rgba(30, 32, 33, 0.82);
+}
+
+.ggr-profile-quick-card > .material-symbols-outlined {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(255, 198, 64, 0.12);
+}
+
+.ggr-profile-quick-card small,
+.ggr-profile-info-list small {
+  display: block;
+  color: var(--dim);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ggr-profile-quick-card strong {
+  display: block;
+  margin-top: 4px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.ggr-profile-stat-grid .ggr-stat-card {
+  min-height: 104px;
+}
+
+.ggr-profile-stat-grid .ggr-stat-card strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.ggr-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ggr-profile-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.ggr-profile-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ggr-profile-panel-head > .material-symbols-outlined {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  border: 1px solid rgba(255, 223, 159, 0.24);
+  border-radius: 14px;
+  background: rgba(255, 198, 64, 0.1);
+}
+
+.ggr-profile-panel-head h2 {
+  margin: 3px 0 0;
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  font-size: 19px;
+  line-height: 1.1;
+}
+
+.ggr-profile-info-list {
+  display: grid;
+  gap: 10px;
+}
+
+.ggr-profile-info-list > div {
+  min-height: 62px;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ggr-profile-info-list strong {
+  color: var(--text);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.ggr-profile-copy-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.ggr-profile-copy-row input {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  outline: none;
+}
+
+@media (min-width: 700px) and (max-width: 959.98px) {
+  .ggr-profile-wallet {
+    grid-template-columns: 1fr;
+  }
+
+  .ggr-profile-wallet-actions {
+    justify-content: stretch;
+    min-width: 0;
+  }
+
+  .ggr-profile-wallet-actions .ggr-btn {
+    flex: 1 1 140px;
+  }
+
+  .ggr-profile-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ggr-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 699.98px) {
+  .ggr-profile-section {
+    padding-top: 14px;
+  }
+
+  .ggr-profile-head {
+    align-items: center;
+  }
+
+  .ggr-profile-head .ggr-btn {
+    width: 46px;
+    min-width: 46px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .ggr-profile-head .ggr-btn .material-symbols-outlined {
+    margin: 0;
+  }
+
+  .ggr-profile-head .ggr-btn {
+    font-size: 0;
+  }
+
+  .ggr-profile-wallet {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    border-radius: 18px;
+  }
+
+  .ggr-profile-wallet-actions {
+    display: grid;
+    grid-template-columns: 1.18fr 0.82fr;
+    min-width: 0;
+  }
+
+  .ggr-profile-wallet-actions .ggr-btn {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 10px;
+  }
+
+  .ggr-profile-deposit-cta {
+    min-height: 56px;
+  }
+
+  .ggr-profile-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .ggr-profile-quick-card {
+    min-height: 82px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .ggr-profile-quick-card > .material-symbols-outlined {
+    width: 38px;
+    height: 38px;
+  }
+
+  .ggr-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ggr-profile-copy-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ggr-profile-copy-row .ggr-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .ggr-profile-wallet-actions,
+  .ggr-profile-quick-grid {
+    grid-template-columns: 1fr;
   }
 }
 

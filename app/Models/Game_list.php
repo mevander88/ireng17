@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model; 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Game_list extends Model
 {
@@ -39,12 +40,20 @@ class Game_list extends Model
 
 
     function get_game_list( $provider, $type){
-        return $this->select('game_list.*', DB::RAW('IFNULL(game_locks.status, game_list.game_locked) as game_locks'))
+        $query = $this->select('game_list.*', DB::raw('game_list.game_locked as game_locks'))
             ->where([
                 'data_type' => $type,
                 'provider' => $provider,
                 'game_list.status' => 1
-            ])->leftJoin('game_locks', function($join){
+            ]);
+
+        if (!Schema::hasTable('game_locks')) {
+            return $query->get();
+        }
+
+        return $query
+            ->select('game_list.*', DB::raw('IFNULL(game_locks.status, game_list.game_locked) as game_locks'))
+            ->leftJoin('game_locks', function($join){
                 $user_id = empty(Auth()->user()) ? 0 : Auth()->user()->id;
                 $join->on('game_list.id', '=', 'game_locks.game_id')
                 ->where('game_locks.user_id', '=', $user_id)

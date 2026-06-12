@@ -1,92 +1,357 @@
-# fix_two_week
+# ireng17
 
+ireng17 adalah aplikasi web Laravel untuk lobby game online dengan frontend mobile-first, backoffice admin, integrasi katalog/provider GGR, deposit QRIS TopPayment, manajemen banner/popup/SEO, dan halaman AMP ringan untuk landing page.
 
+Project ini memakai Laravel 10, MySQL/MariaDB, asset publik statis di `public`, dan data katalog game disimpan di database lokal supaya halaman user tidak perlu memanggil API provider setiap request.
 
-## Getting started
+## Fitur Utama
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- Frontend responsive untuk home, slot, casino, sports, e-games, promotion, register, login, profile, deposit, withdraw, dan history.
+- Backoffice admin untuk setting website, appearance/theme, SEO, logo, popup, banner, payment gateway, bank, member, deposit, withdraw, bonus, provider, game, dan history play.
+- Integrasi GGR/Fiver style API untuk provider list, game list, launch game, saldo, deposit, withdraw, dan history play.
+- Integrasi TopPayment/Jayapay alias untuk QRIS deposit, callback, query status pembayaran, dan anti double pending deposit.
+- Cache gambar remote untuk provider/game agar mobile lebih ringan.
+- AMP landing page di `/amp`.
+- Route maintenance `/clear-cache` sudah dibatasi hanya untuk user admin level developer.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Kebutuhan Server
 
-## Add your files
+- PHP 8.1 atau lebih baru.
+- Composer 2.
+- MySQL atau MariaDB.
+- Apache/Nginx.
+- PHP extension: `bcmath`, `ctype`, `curl`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`, `xml`, `zip`, `gd`.
+- Node.js 18+ hanya jika ingin build asset Vite. Sebagian besar asset aktif project ini sudah berada langsung di `public`.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Struktur Penting
 
+- `app/Http/Controllers`: controller user, backoffice, payment, GGR, AMP, cache gambar.
+- `app/Http/Api/fiver.php`: client API provider game legacy.
+- `app/Services/GgrCatalogService.php`: sinkron dan pembacaan katalog lokal.
+- `app/Services/JayapayService.php`: integrasi TopPayment.
+- `resources/views/ggr`: frontend utama dan AMP.
+- `resources/views/backoffice`: halaman admin.
+- `public/assets/css/ggr-site.css`: CSS frontend.
+- `public/Admin`: asset backoffice AdminLTE yang sudah dibersihkan.
+- `database/ireng17_schema.sql`: schema database.
+- `database/ireng17_minimal_seed.sql`: seed minimal.
+- `.env.production.example`: template environment production.
+- `docs/DEPLOYMENT.md`: catatan deploy lebih detail.
+
+## Install Lokal
+
+```bash
+git clone https://github.com/mevander88/ireng17.git
+cd ireng17
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/pencari-cuan/fix_two_week.git
-git branch -M main
-git push -uf origin main
+
+Edit `.env` lokal:
+
+```env
+APP_NAME=ireng17
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ireng17
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
-## Integrate with your tools
+Import database:
 
-- [ ] [Set up project integrations](https://gitlab.com/pencari-cuan/fix_two_week/-/settings/integrations)
+```bash
+mysql -u root -p ireng17 < database/ireng17_schema.sql
+php artisan migrate
+mysql -u root -p ireng17 < database/ireng17_minimal_seed.sql
+```
 
-## Collaborate with your team
+Jalankan server lokal:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```bash
+php artisan serve --host=127.0.0.1 --port=8000
+```
 
-## Test and Deploy
+Buka:
 
-Use the built-in continuous integration in GitLab.
+- Frontend: `http://127.0.0.1:8000`
+- AMP: `http://127.0.0.1:8000/amp`
+- Backoffice login: `http://127.0.0.1:8000/admins`
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Deploy ke VPS
 
-***
+```bash
+git clone https://github.com/mevander88/ireng17.git
+cd ireng17
+composer install --no-dev --optimize-autoloader
+cp .env.production.example .env
+php artisan key:generate
+```
 
-# Editing this README
+Edit `.env` production:
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://domain-anda.com
+AMP_URL=https://domain-anda.com/amp
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+DB_DATABASE=ireng17
+DB_USERNAME=isi_user_db
+DB_PASSWORD=isi_password_db
 
-## Name
-Choose a self-explaining name for your project.
+SESSION_SECURE_COOKIE=true
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Import database:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```bash
+mysql -u USER -p ireng17 < database/ireng17_schema.sql
+php artisan migrate --force
+mysql -u USER -p ireng17 < database/ireng17_minimal_seed.sql
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Permission:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```bash
+php artisan storage:link
+chmod -R 775 storage bootstrap/cache public/storage public/image-cache
+chown -R www-data:www-data storage bootstrap/cache public/storage public/image-cache
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Sesuaikan `www-data` dengan user web server yang dipakai.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Optimasi production:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Untuk Nginx/Apache, document root terbaik adalah:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```text
+/path/ke/ireng17/public
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Deploy ke Shared Hosting atau cPanel
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Cara paling aman adalah arahkan document root domain ke folder `public`.
 
-## License
-For open source projects, say how it is licensed.
+Jika hosting tidak mengizinkan document root ke `public`, upload project ke root hosting dan pastikan file `.htaccess` root project ikut terupload. File `.htaccess` project sudah menolak akses langsung ke file/folder sensitif seperti `.env`, `vendor`, `storage`, `routes`, `config`, `database`, dan mengarahkan request ke `public`.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Langkah umum cPanel:
+
+1. Upload semua file project.
+2. Buat database dan user MySQL.
+3. Import `database/ireng17_schema.sql`.
+4. Jalankan migration jika tersedia terminal:
+
+```bash
+php artisan migrate --force
+```
+
+5. Import `database/ireng17_minimal_seed.sql`.
+6. Copy `.env.production.example` menjadi `.env`.
+7. Isi `APP_URL`, database, TopPayment, dan GGR.
+8. Jalankan:
+
+```bash
+php artisan key:generate
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Jika `storage:link` tidak bisa karena shared hosting membatasi symlink, buat folder `public/storage` manual dan pastikan upload backoffice mengarah ke folder publik yang writable.
+
+## Konfigurasi User Admin
+
+Project memakai kolom `users.level`.
+
+- User biasa: `NULL` atau selain `1/2`.
+- Admin: `1`.
+- Developer/super admin: `2`.
+
+Contoh menjadikan user `yola` sebagai developer/admin level 2:
+
+```sql
+UPDATE users SET level = 2 WHERE name = 'yola';
+```
+
+Route yang sensitif seperti `/clear-cache`, setting gateway, banner, bonus, dan game setting berada di middleware admin/developer.
+
+## Konfigurasi GGR Provider API
+
+Ada dua sumber konfigurasi:
+
+- `.env`: `GGR_API_URL`, `GGR_AGENT_CODE`, `GGR_AGENT_TOKEN`.
+- Table `api`: `nx_endpoint`, `nx_agent_code`, `nx_token`, dan field provider legacy.
+
+Client utama `App\Http\Api\fiver` membaca dari row pertama table `api`. Pastikan backoffice menu GGR/API sudah berisi endpoint, agent code, dan token yang benar.
+
+Contoh `.env`:
+
+```env
+GGR_API_URL=https://api.nexusggr.com
+GGR_AGENT_CODE=agent_anda
+GGR_AGENT_TOKEN=token_anda
+```
+
+Setelah konfigurasi benar, sinkron katalog:
+
+```bash
+php artisan ggr:sync-catalog
+```
+
+Atau lewat Backoffice:
+
+- `/backoffice/ggr`
+- `Test Provider API`
+- `Sync Provider`
+- `Sync Game`
+
+Frontend membaca `ggr_providers` dan `ggr_games` dari database lokal supaya halaman user lebih cepat.
+
+## Konfigurasi TopPayment / QRIS
+
+TopPayment dibaca dari `config/jayapay.php` melalui `.env`. Prefix `JAYAPAY_*` masih didukung sebagai alias lama.
+
+Contoh:
+
+```env
+TOPPAYMENT_MERCHANT_CODE=TOP1B10124
+TOPPAYMENT_PRIVATE_KEY_PATH=storage/app/toppayment_private.pem
+TOPPAYMENT_PUBLIC_KEY_PATH=storage/app/toppayment_public.pem
+TOPPAYMENT_API_URL=https://global-id-openapi.toppayment.com/id/pay/prePay
+TOPPAYMENT_QUERY_URL=https://global-id-openapi.toppayment.com/id/pay/query
+TOPPAYMENT_NOTIFY_URL=https://domain-anda.com/api/jayapay/callback
+```
+
+Upload key RSA ke:
+
+```text
+storage/app/toppayment_private.pem
+storage/app/toppayment_public.pem
+```
+
+Callback aktif di:
+
+```text
+POST /api/jayapay/callback
+POST /jayapay/callback
+```
+
+Pastikan `TOPPAYMENT_NOTIFY_URL` memakai domain production yang bisa diakses publik.
+
+## Cache Gambar
+
+Remote image provider/game akan diarahkan melalui sistem cache agar mobile tidak berat.
+
+Folder terkait:
+
+- `storage/app/image-cache`
+- `public/image-cache`
+
+Command cache manual:
+
+```bash
+php artisan images:cache-remote
+```
+
+Pastikan folder cache writable oleh web server.
+
+## Keamanan Production
+
+Wajib sebelum go-live:
+
+- `APP_ENV=production`.
+- `APP_DEBUG=false`.
+- `APP_URL` sesuai domain production.
+- Gunakan HTTPS dan `SESSION_SECURE_COOKIE=true`.
+- Jangan commit atau publish `.env`, private key, full dump transaksi/member, atau credential API.
+- Document root diarahkan ke `public` bila memungkinkan.
+- Pastikan `/clear-cache` hanya bisa diakses user level `2`.
+- Pastikan permission hanya writable untuk `storage`, `bootstrap/cache`, `public/storage`, dan `public/image-cache`.
+
+## Checklist Setelah Deploy
+
+- Homepage `/` HTTP 200.
+- AMP `/amp` HTTP 200.
+- Backoffice `/admins` bisa login.
+- Logo, favicon, banner, popup tampil.
+- Register dan login user berjalan.
+- Deposit membuat transaksi pending dan tidak bisa double deposit saat masih pending.
+- Callback TopPayment berhasil mengubah status deposit.
+- Provider API test sukses di backoffice.
+- Sync provider/game berhasil.
+- Game launch membuka URL provider.
+- History play membaca data API sesuai filter.
+- `php artisan route:list` tidak error.
+- `storage/logs/laravel.log` tidak berisi error baru setelah smoke test.
+
+## Troubleshooting
+
+Blank putih:
+
+```bash
+php artisan config:clear
+php artisan view:clear
+php artisan route:clear
+tail -f storage/logs/laravel.log
+```
+
+Asset upload/logo tidak muncul:
+
+```bash
+php artisan storage:link
+chmod -R 775 storage public/storage
+```
+
+Provider API gagal:
+
+- Cek table `api`, terutama `nx_endpoint`, `nx_agent_code`, `nx_token`.
+- Cek DNS server bisa resolve endpoint.
+- Cek `storage/logs/laravel.log`.
+
+Signature TopPayment gagal:
+
+- Pastikan private key dan public key sesuai pasangan.
+- Pastikan path key di `.env` benar.
+- Pastikan callback menggunakan payload asli dari gateway.
+- Clear config cache setelah update gateway:
+
+```bash
+php artisan config:clear
+php artisan config:cache
+```
+
+## Perintah Verifikasi Cepat
+
+```bash
+php -l routes/web.php
+php artisan route:list
+php artisan config:clear
+php artisan cache:clear
+```
+
+Untuk cek beberapa endpoint lokal:
+
+```bash
+curl -I http://127.0.0.1:8000/
+curl -I http://127.0.0.1:8000/amp
+curl -I http://127.0.0.1:8000/slots
+curl -I http://127.0.0.1:8000/admins
+```

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\backoffice;
 
 use App\Http\Api\fiver;
-use App\Http\Api\softgaming;
 use App\Models\Transaksi;
 use App\Models\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Carbon;
 
 class BackofficeController extends Controller
@@ -96,6 +96,14 @@ class BackofficeController extends Controller
         'balance' => $balance,
     ]);
 }
+
+    public function clearCache()
+    {
+        Artisan::call('cache:clear');
+        Artisan::call('config:cache');
+
+        return response()->json(['status' => 'ok']);
+    }
 
     public function getTotalBersihHarian()
     {

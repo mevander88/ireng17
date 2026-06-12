@@ -12,7 +12,16 @@
             });
         </script>
     @endif
-    <div class="mt-3">
+    @if (isset($errors) && $errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal menyimpan',
+                text: '{{ $errors->first() }}',
+            });
+        </script>
+    @endif
+    <div class="mt-3 bo-setting-page">
         <div class="col-12 col-sm-12">
             <div class="card card-primary card-outline card-tabs">
                 <div class="card-header p-0 pt-1 border-bottom-0">
@@ -63,7 +72,17 @@
                                 @method('PUT')
                                 @csrf
                                 <div class="row">
-                                    <div class="col-6">
+                                    @php
+                                        $seoBannerPreview = !empty($setting->seo_banner) ? asset('storage/' . $setting->seo_banner) : asset('assets/images/provider-covers/spribe-aviator.svg');
+                                    @endphp
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <strong>SEO aktif sekarang:</strong>
+                                            description {{ filled($setting->seo_description) ? 'custom aktif' : 'default' }},
+                                            social banner {{ filled($setting->seo_banner) ? 'custom (' . $setting->seo_banner . ')' : 'default' }}.
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1" class="form-text text-muted">Nama Website
                                                 :</label>
@@ -71,16 +90,16 @@
                                                 placeholder="Nama Website" value="{{ $setting->nama_web }}">
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label class="form-text text-muted">No TLP:</label>
-                                            <input name="telp" type="number" class="form-control"
+                                            <input name="telp" type="text" class="form-control"
                                                 placeholder="Nomor Telepon format +62" value="{{ $setting->telp }}">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1" class="form-text text-muted">SEO Meta Keyword
                                                 :</label>
@@ -88,7 +107,7 @@
                                                 value="{{ $setting->seo_meta_keywords }}">
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1" class="form-text text-muted">SEO Description
                                                 :</label>
@@ -98,7 +117,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1" class="form-text text-muted">SEO Social Meta
                                                 Description :</label>
@@ -106,30 +125,29 @@
                                                 value="{{ $setting->seo_social_description }}">
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <label class="form-text text-muted" for="form-text text-muted">Status
-                                                        Website :
-                                                        @if ($setting->maintenance_mode == 0)
-                                                            <strong class="admin-status-text is-online"> Online</strong>
-                                                        @else
-                                                            <strong class="admin-status-text is-maintenance"> Maintenance</strong>
-                                                        @endif
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <select class="form-control" name="maintenance_mode" id="">
-                                                <option value="">
-                                                    @if ($setting->maintenance_mode == 0)
-                                                <option value="1">Maintenance On</option>
-                                            @else
-                                                <option value="0">Normal</option>
+                                            <label class="form-text text-muted">Status Website :
+                                                @if ($setting->maintenance_mode == 0)
+                                                    <strong class="admin-status-text is-online"> Online</strong>
+                                                @else
+                                                    <strong class="admin-status-text is-maintenance"> Maintenance</strong>
                                                 @endif
-                                                </option>
+                                            </label>
+                                            <select class="form-control" name="maintenance_mode" required>
+                                                <option value="0" {{ (int) $setting->maintenance_mode === 0 ? 'selected' : '' }}>Normal</option>
+                                                <option value="1" {{ (int) $setting->maintenance_mode === 1 ? 'selected' : '' }}>Maintenance On</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label class="form-text text-muted">SEO Social Banner :</label>
+                                            <div class="bo-setting-preview mb-2">
+                                                <img src="{{ $seoBannerPreview }}" alt="SEO banner {{ $setting->nama_web }}" loading="lazy">
+                                            </div>
+                                            <input name="seoBanner" type="file" class="form-control uploads"
+                                                accept="image/png, image/jpeg, image/webp, image/gif">
                                         </div>
                                     </div>
                                 </div>
@@ -175,121 +193,70 @@
                                 @method('PUT')
                                 @csrf
                                 <div class="row">
-                                    <div class="col-6">
-                                        <label class="form-text text-muted">Logo Website :</label>
-                                        <input name="logo" type="file" class="form-control uploads"
-                                            accept="image/png, image/jpeg, image/gif, video/mp4">
+                                    @php
+                                        $logoPreview = !empty($setting->logo) ? asset('storage/' . $setting->logo) : asset('assets/images/logo.png');
+                                        $faviconPreview = !empty($setting->favicon) ? asset('storage/' . $setting->favicon) : asset('favicon.ico');
+                                        $themeStoredValue = $setting->themes ?: 'theme-1';
+                                        $isCustomTheme = $activeTheme['key'] === 'custom';
+                                    @endphp
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <strong>Tema aktif sekarang:</strong>
+                                            {{ $activeTheme['name'] }} ({{ $themeStoredValue }}).
+                                            <span class="ml-2 d-inline-flex align-items-center" style="gap:6px;vertical-align:middle;">
+                                                <span title="Primary" style="display:inline-block;width:18px;height:18px;border-radius:4px;background:{{ $activeTheme['primary_solid'] }};border:1px solid rgba(0,0,0,.18);"></span>
+                                                <span title="Deep" style="display:inline-block;width:18px;height:18px;border-radius:4px;background:{{ $activeTheme['primary_deep'] }};border:1px solid rgba(0,0,0,.18);"></span>
+                                                <span title="Gold" style="display:inline-block;width:18px;height:18px;border-radius:4px;background:{{ $activeTheme['gold'] }};border:1px solid rgba(0,0,0,.18);"></span>
+                                                <span title="Soft" style="display:inline-block;width:18px;height:18px;border-radius:4px;background:{{ $activeTheme['gold_soft'] }};border:1px solid rgba(0,0,0,.18);"></span>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Logo Website :</label>
+                                        <div class="mb-2">
+                                            <img src="{{ $logoPreview }}" alt="Logo {{ $setting->nama_web }}" style="max-height:56px;max-width:220px;background:#111;border:1px solid #333;border-radius:8px;padding:8px;">
+                                        </div>
+                                        <input name="logo" type="file" class="form-control uploads"
+                                            accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml">
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Favicon :</label>
+                                        <div class="mb-2">
+                                            <img src="{{ $faviconPreview }}" alt="Favicon {{ $setting->nama_web }}" style="width:40px;height:40px;object-fit:contain;background:#111;border:1px solid #333;border-radius:8px;padding:6px;">
+                                        </div>
+                                        <input name="favicon" type="file" class="form-control uploads"
+                                            accept="image/png, image/jpeg, image/webp, image/gif, image/x-icon">
+                                    </div>
+                                    <div class="col-12 col-md-6">
                                         <label class="form-text text-muted">Running Text :</label>
                                         <input name="running_text" type="text" class="form-control"
                                             value="{{ $setting->running_text }}" placeholder="Running Text">
                                     </div>
-                                    <div class="col-6">
-                                        <label for="exampleInputEmail1" class="form-text text-muted">Template
-                                            :</label>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Template :</label>
                                         <select name="template" class="form-control">
-                                            <option value="main" <?= $setting->template == 'main' ? 'selected' : '' ?>>
-                                                Onix/UG
-                                            </option>
+                                            <option value="main" {{ $setting->template == 'main' ? 'selected' : '' }}>Onix/UG</option>
                                         </select>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label for="Theme" class="form-text text-muted">Theme :</label>
                                             <select name="theme" class="form-control">
-                                                <option value="{{ $setting->themes }}">{{ $setting->themes }}</option>
-                                                <option value="theme-1">
-                                                    Onix Theme
-                                                </option>
-                                                <option value="theme-2">
-                                                    Onix Theme 2
-                                                </option>
-                                                <option value="theme-3">
-                                                    Onix Theme 3
-                                                </option>
-                                                <option value="theme-4">
-                                                    Onix Theme 4
-                                                </option>
-                                                <option value="theme-5">
-                                                    Onix Theme 5
-                                                </option>
-                                                <option value="theme-6">
-                                                    Onix Theme 6
-                                                </option>
-                                                <option value="theme-7">
-                                                    Onix Theme 7
-                                                </option>
-                                                <option value="theme-8">
-                                                    Onix Theme 8
-                                                </option>
-                                                <option value="theme-9">
-                                                    Onix Theme 9
-                                                </option>
-                                                <option value="theme-10">
-                                                    Onix Theme 10
-                                                </option>
-                                                <option value="theme-11">
-                                                    Onix Theme 11
-                                                </option>
-                                                <option value="theme-12">
-                                                    Onix Theme 12
-                                                </option>
-                                                <option value="theme-13">
-                                                    Onix Theme 13
-                                                </option>
-                                                <option value="theme-14">
-                                                    Onix Theme 14
-                                                </option>
-                                                <option value="theme-15">
-                                                    Onix Theme 15
-                                                </option>
-                                                <option value="theme-16">
-                                                    Onix Theme 16
-                                                </option>
-                                                <option value="theme-17">
-                                                    Onix Theme 17
-                                                </option>
-                                                <option value="theme-18">
-                                                    Onix Theme 18
-                                                </option>
-                                                <option value="theme-19">
-                                                    Onix Theme 19
-                                                </option>
-                                                <option value="theme-20">
-                                                    Onix Theme 20
-                                                </option>
-                                                <option value="theme-21">
-                                                    Onix Theme 21
-                                                </option>
-                                                <option value="theme-22">
-                                                    Onix Theme 22
-                                                </option>
-                                                <option value="theme-23">
-                                                    Onix Theme 23
-                                                </option>
-                                                <option value="theme-24">
-                                                    Onix Theme 24
-                                                </option>
-                                                <option value="theme-25">
-                                                    Onix Theme 25
-                                                </option>
-                                                <option value="theme-26">
-                                                    Onix Theme 26
-                                                </option>
-                                                <option value="theme-27">
-                                                    Onix Theme 27
-                                                </option>
-                                                <option value="theme-28">
-                                                    Onix Theme 28
-                                                </option>
-                                                <option value="theme-29">
-                                                    Onix Theme 29
-                                                </option>
-                                                <option value="theme-30">
-                                                    Onix Theme 30
-                                                </option>
+                                                @foreach ($themePresets as $themeKey => $theme)
+                                                    <option value="{{ $themeKey }}" {{ $activeTheme['key'] === $themeKey ? 'selected' : '' }}>
+                                                        {{ $theme['name'] }}
+                                                    </option>
+                                                @endforeach
+                                                <option value="custom" {{ $isCustomTheme ? 'selected' : '' }}>Custom Accent</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-text text-muted">Custom Accent :</label>
+                                            <input name="theme_custom" type="color" class="form-control"
+                                                value="{{ $isCustomTheme ? $themeStoredValue : $activeTheme['gold'] }}"
+                                                style="height:38px;padding:4px;">
                                         </div>
                                     </div>
                                 </div>
@@ -302,31 +269,75 @@
                                 @method('PUT')
                                 @csrf
                                 <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label class="form-text text-muted">Pop Up Banner :</label>
-                                            <input name="popup" type="file" class="form-control uploads"
-                                                accept="image/png, image/jpeg, image/gif, video/mp4">
+                                    @php
+                                        $popupPreview = !empty($setting->popup) ? asset('storage/' . $setting->popup) : null;
+                                        $popupExtension = $setting->popup ? strtolower(pathinfo($setting->popup, PATHINFO_EXTENSION)) : null;
+                                        $popupEnabled = (int) ($setting->popup_enabled ?? 1);
+                                    @endphp
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <strong>Popup aktif sekarang:</strong>
+                                            status {{ $popupEnabled === 1 ? 'aktif' : 'nonaktif' }},
+                                            title {{ filled($setting->popup_title) ? $setting->popup_title : strtoupper($setting->nama_web ?? 'ireng17') }},
+                                            media {{ $setting->popup ? 'custom (' . $setting->popup . ')' : 'default logo' }},
+                                            background {{ $setting->popup_bg ?: '#111111' }},
+                                            text {{ filled($setting->msg_popup) ? 'custom aktif' : 'default' }}.
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1" class="form-text text-muted">PopUp Background
-                                                :</label>
-                                            <input class="form-control" type="color" value="{{ $setting->popup_bg }}"
+                                            <label class="form-text text-muted">Pop Up Banner :</label>
+                                            @if ($popupPreview)
+                                                <div class="bo-setting-preview is-popup mb-2">
+                                                    @if (in_array($popupExtension, ['mp4', 'webm']))
+                                                        <video src="{{ $popupPreview }}" muted controls></video>
+                                                    @else
+                                                        <img src="{{ $popupPreview }}" alt="Popup banner">
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            <input name="popup" type="file" class="form-control uploads"
+                                                accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml, video/mp4, video/webm">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-text text-muted">Status Popup :</label>
+                                            <select class="form-control mb-3" name="popup_enabled" required>
+                                                <option value="1" {{ $popupEnabled === 1 ? 'selected' : '' }}>Aktif</option>
+                                                <option value="0" {{ $popupEnabled !== 1 ? 'selected' : '' }}>Nonaktif</option>
+                                            </select>
+                                            <label class="form-text text-muted">Popup Title :</label>
+                                            <input class="form-control mb-3" type="text" name="popup_title"
+                                                value="{{ old('popup_title', $setting->popup_title ?? '') }}"
+                                                placeholder="{{ strtoupper($setting->nama_web ?? 'ireng17') }}" maxlength="120">
+                                            <label class="form-text text-muted">Popup Background :</label>
+                                            <input class="form-control" type="color" value="{{ $setting->popup_bg ?: '#111111' }}"
                                                 name="popup_bg">
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1" class="form-text text-muted">Popup Text
-                                                :</label>
-                                            <textarea id="editor" name="msg_popup">
-                                            {{ $setting->msg_popup }}
-                                        </textarea>
+                                            <label class="form-text text-muted">Popup Text :</label>
+                                            <textarea id="editor" name="msg_popup">{{ $setting->msg_popup }}</textarea>
                                         </div>
                                     </div>
-
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-text text-muted">CTA Text :</label>
+                                            <input class="form-control" type="text" name="popup_cta_text"
+                                                value="{{ old('popup_cta_text', $setting->popup_cta_text ?? '') }}"
+                                                placeholder="Daftar Sekarang" maxlength="80">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-text text-muted">CTA URL :</label>
+                                            <input class="form-control" type="text" name="popup_cta_url"
+                                                value="{{ old('popup_cta_url', $setting->popup_cta_url ?? '') }}"
+                                                placeholder="/register">
+                                        </div>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </form>
@@ -337,27 +348,52 @@
                                 @method('PUT')
                                 @csrf
                                 <div class="row">
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">URL Agregator :</label>
-                                        <input class="form-control" name="urlAgregator"
-                                            value="{{ $setting->url_gateway }}" type="text">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Merchant Number :</label>
+                                        <input class="form-control" name="merchantCode"
+                                            value="{{ old('merchantCode', $topPayment['merchant_code'] ?? '') }}" type="text" placeholder="TOP1B10124" required>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">API Key :</label>
-                                        <input class="form-control" name="apiKey"
-                                            value="{{ $setting->apikey_gateway }}" type="text">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">Callback Url :</label>
-                                        <input class="form-control" name="callback" value="{{ $setting->callback_url }}"
-                                            type="text">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">Status :</label>
-                                        <select class="form-control" name="statusGateway" id="">
-                                            <option value="1">Active</option>
-                                            <option value="2">Inactive</option>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Status QRIS :</label>
+                                        <select class="form-control" name="statusGateway" required>
+                                            <option value="1" {{ (int) $setting->qris_status === 1 ? 'selected' : '' }}>Active</option>
+                                            <option value="0" {{ (int) $setting->qris_status !== 1 ? 'selected' : '' }}>Inactive</option>
                                         </select>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Create Payment URL :</label>
+                                        <input class="form-control" name="apiUrl"
+                                            value="{{ old('apiUrl', $topPayment['api_url'] ?? 'https://global-id-openapi.toppayment.com/id/pay/prePay') }}" type="url" required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Query Status URL :</label>
+                                        <input class="form-control" name="queryUrl"
+                                            value="{{ old('queryUrl', $topPayment['query_url'] ?? 'https://global-id-openapi.toppayment.com/id/pay/query') }}" type="url" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-text text-muted">Notify / Callback URL :</label>
+                                        <input class="form-control" name="notifyUrl"
+                                            value="{{ old('notifyUrl', $topPayment['notify_url'] ?? route('jayapay.callback')) }}" type="url" required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Private Key Path :</label>
+                                        <input class="form-control" name="privateKeyPath"
+                                            value="{{ old('privateKeyPath', $topPayment['private_key_path'] ?? 'storage/app/toppayment_private.pem') }}" type="text" required>
+                                        <small class="form-text text-muted">Fingerprint: {{ $topPayment['private_key_fingerprint'] ?? 'belum terbaca' }}</small>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Platform Public Key Path :</label>
+                                        <input class="form-control" name="publicKeyPath"
+                                            value="{{ old('publicKeyPath', $topPayment['public_key_path'] ?? 'storage/app/toppayment_public.pem') }}" type="text" required>
+                                        <small class="form-text text-muted">Fingerprint: {{ $topPayment['public_key_fingerprint'] ?? 'belum terbaca' }}</small>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Merchant Private Key :</label>
+                                        <textarea class="form-control" name="merchantPrivateKey" rows="7" placeholder="Kosongkan jika tidak ingin mengganti private key."></textarea>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Platform Public Key :</label>
+                                        <textarea class="form-control" name="platformPublicKey" rows="7" placeholder="Paste public key platform TopPayment untuk verifikasi callback."></textarea>
                                     </div>
                                 </div>
                                 <br>
@@ -369,21 +405,37 @@
                             <form action="{{ route('update.depowd') }}" method="POST" enctype="multipart/form-data">
                                 @method('PUT')
                                 @csrf
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="alert alert-info mb-0">
+                                            <strong>Setting aktif sekarang:</strong>
+                                            Minimal Deposit Rp {{ number_format((int) $setting->minimal_depo, 0, ',', '.') }},
+                                            Minimal Withdraw Rp {{ number_format((int) $setting->minimal_wd, 0, ',', '.') }},
+                                            Maksimal Withdraw Rp {{ number_format((int) $setting->maksimal_wd, 0, ',', '.') }},
+                                            Delay pending deposit {{ (int) ($setting->deposit_delay ?? 24) }} jam.
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">Minimalm Deposit :</label>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Minimal Deposit :</label>
                                         <input class="form-control" name="minim_depo"
-                                            value="{{ $setting->minimal_depo }}" type="number">
+                                            value="{{ old('minim_depo', $setting->minimal_depo) }}" type="number" min="1000" step="1000" required>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">Minimal Withdraw :</label>
-                                        <input class="form-control" name="minim_wd" value="{{ $setting->minimal_wd }}"
-                                            type="number">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Minimal Withdraw :</label>
+                                        <input class="form-control" name="minim_wd" value="{{ old('minim_wd', $setting->minimal_wd) }}"
+                                            type="number" min="1000" step="1000" required>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-text text-muted" for="url">Maksimal Withdraw :</label>
-                                        <input class="form-control" name="maks_wd" value="{{ $setting->maksimal_wd }}"
-                                            type="number">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Maksimal Withdraw :</label>
+                                        <input class="form-control" name="maks_wd" value="{{ old('maks_wd', $setting->maksimal_wd) }}"
+                                            type="number" min="1000" step="1000" required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-text text-muted">Delay Pending Deposit (Jam) :</label>
+                                        <input class="form-control" name="deposit_delay" value="{{ old('deposit_delay', $setting->deposit_delay ?? 24) }}"
+                                            type="number" min="1" max="168" step="1" required>
                                     </div>
                                 </div>
                                 <br>
@@ -478,10 +530,23 @@
                                                                 value="{{ $api->nx_token }}" type="text">
                                                         </div>
                                                         <div class="col-6">
+                                                            <label class="form-text text-muted" for="url">Agent Secret
+                                                                :</label>
+                                                            <input class="form-control" name="nxSecret"
+                                                                value="{{ $api->nx_secret ?? '' }}" type="text">
+                                                            <small class="form-text text-muted">
+                                                                Dibutuhkan hanya untuk Seamless Site Endpoint
+                                                                <code>/gold_api</code>.
+                                                            </small>
+                                                        </div>
+                                                        <div class="col-6">
                                                             <label class="form-text text-muted" for="url">Endpoint
                                                                 :</label>
                                                             <input class="form-control" name="nxEndpoint"
                                                                 value="{{ $api->nx_endpoint }}" type="text">
+                                                            <small class="form-text text-muted">
+                                                                Ambil dari GGR profile: https://{SERVER}/app/profile bagian API Endpoint.
+                                                            </small>
                                                         </div>
                                                         <div class="col-6">
                                                             <label class="form-text text-muted"

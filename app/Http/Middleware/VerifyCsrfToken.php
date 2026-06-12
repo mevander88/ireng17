@@ -12,7 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'jayapay/callback', // ✅ Callback dari Jayapay (tanpa slash awal)
-        'api/jayapay/callback', // ✅ Jika callback diarahkan ke route API
+        'api/jayapay/callback',
+        'gold_api',
     ];
 }

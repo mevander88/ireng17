@@ -3,6 +3,7 @@
 namespace App\Http\Api;
 
 use App\Models\Api;
+use Illuminate\Support\Facades\Log;
 
 class fiver
 {
@@ -13,9 +14,9 @@ class fiver
     public function __construct()
     {
         $api = Api::first();
-        $this->agen = $api->nx_agent_code;
-        $this->token = $api->nx_token;
-        $this->url  = $api->nx_endpoint;
+        $this->agen = $api?->nx_agent_code ?: 'akurat77';
+        $this->token = $api?->nx_token ?: 'd90e23be49fc8b08065acf6a0473214e';
+        $this->url  = trim((string) ($api?->nx_endpoint ?? ''));
     }
 
     /**
@@ -60,7 +61,7 @@ class fiver
         return $this->sg_connect($this->url, $param);
     }
 
-    public function deposit($username, $amount)
+    public function deposit($username, $amount, ?string $agentSign = null)
     {
         // ⬇️ Tambahkan sanitizer di sini
         $amount = $this->cleanAmount($amount);
@@ -72,10 +73,15 @@ class fiver
             'user_code' => $username,
             'amount' => $amount,
         ];
+
+        if ($agentSign) {
+            $param['agent_sign'] = $agentSign;
+        }
+
         return $this->sg_connect($this->url, $param);
     }
 
-    public function withdraw($username, $amount)
+    public function withdraw($username, $amount, ?string $agentSign = null)
     {
         // ⬇️ Tambahkan sanitizer di sini juga
         $amount = $this->cleanAmount($amount);
@@ -87,6 +93,24 @@ class fiver
             'user_code' => $username,
             'amount' => $amount,
         ];
+
+        if ($agentSign) {
+            $param['agent_sign'] = $agentSign;
+        }
+
+        return $this->sg_connect($this->url, $param);
+    }
+
+    public function transferStatus($username, string $agentSign)
+    {
+        $param = [
+            'method' => 'transfer_status',
+            'agent_code' => $this->agen,
+            'agent_token' => $this->token,
+            'user_code' => $username,
+            'agent_sign' => $agentSign,
+        ];
+
         return $this->sg_connect($this->url, $param);
     }
 
@@ -132,7 +156,7 @@ class fiver
         return $this->sg_connect($this->url, $param);
     }
 
-    public function callList($provider, $gamecode, $username)
+    public function callList($provider, $gamecode, $username = null)
     {
         $param = [
             'method' => 'call_list',
@@ -140,7 +164,6 @@ class fiver
             'agent_token' => $this->token,
             'provider_code' => $provider,
             'game_code' => $gamecode,
-            'user_code' => $username,
         ];
         return $this->sg_connect($this->url, $param);
     }
@@ -157,6 +180,58 @@ class fiver
             'call_rtp' => $rtp,
             'call_type' => $type,
         ];
+        return $this->sg_connect($this->url, $param);
+    }
+
+    public function callCancel($callId)
+    {
+        $param = [
+            'method' => 'call_cancel',
+            'agent_code' => $this->agen,
+            'agent_token' => $this->token,
+            'call_id' => (int) $callId,
+        ];
+
+        return $this->sg_connect($this->url, $param);
+    }
+
+    public function callHistory(int $offset = 0, int $limit = 100)
+    {
+        $param = [
+            'method' => 'call_history',
+            'agent_code' => $this->agen,
+            'agent_token' => $this->token,
+            'offset' => max(0, $offset),
+            'limit' => max(1, min(500, $limit)),
+        ];
+
+        return $this->sg_connect($this->url, $param);
+    }
+
+    public function controlRtp($provider, $username, $rtp)
+    {
+        $param = [
+            'method' => 'control_rtp',
+            'agent_code' => $this->agen,
+            'agent_token' => $this->token,
+            'provider_code' => $provider,
+            'user_code' => $username,
+            'rtp' => (int) $rtp,
+        ];
+
+        return $this->sg_connect($this->url, $param);
+    }
+
+    public function controlUsersRtp(array $userCodes, $rtp)
+    {
+        $param = [
+            'method' => 'control_users_rtp',
+            'agent_code' => $this->agen,
+            'agent_token' => $this->token,
+            'user_codes' => json_encode(array_values($userCodes)),
+            'rtp' => (int) $rtp,
+        ];
+
         return $this->sg_connect($this->url, $param);
     }
 
@@ -192,6 +267,20 @@ class fiver
 
     private function sg_connect($url, $postArray)
     {
+        if (trim((string) $url) === '') {
+            return json_encode([
+                'status' => 0,
+                'msg' => 'Provider API endpoint belum diset. Isi API Endpoint dari halaman GGR /app/profile.',
+            ]);
+        }
+
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return json_encode([
+                'status' => 0,
+                'msg' => 'Provider API endpoint tidak valid. Gunakan URL lengkap dari halaman GGR /app/profile.',
+            ]);
+        }
+
         $jsonData = json_encode($postArray);
         $headerArray = ['Content-Type: application/json'];
 
@@ -202,14 +291,50 @@ class fiver
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, (bool) config('services.provider_ssl_verify', true));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
         $res = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $curlErrno = curl_errno($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+
+        if ($res === false || $curlErrno !== 0) {
+            Log::warning('Provider API curl failed', [
+                'url' => $url,
+                'method' => $postArray['method'] ?? null,
+                'curl_errno' => $curlErrno,
+                'curl_error' => $curlError,
+            ]);
+
+            return json_encode([
+                'status' => 0,
+                'msg' => 'Provider API gagal: ' . ($curlError ?: 'curl error ' . $curlErrno),
+                'curl_errno' => $curlErrno,
+            ]);
+        }
+
+        if ($httpCode >= 400 || trim((string) $res) === '') {
+            Log::warning('Provider API returned unusable response', [
+                'url' => $url,
+                'method' => $postArray['method'] ?? null,
+                'http_code' => $httpCode,
+                'response_preview' => substr((string) $res, 0, 500),
+            ]);
+
+            return json_encode([
+                'status' => 0,
+                'msg' => $httpCode >= 400
+                    ? 'Provider API gagal HTTP ' . $httpCode
+                    : 'Provider API tidak mengembalikan response.',
+                'http_code' => $httpCode,
+            ]);
+        }
 
         return $res;
     }

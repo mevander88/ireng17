@@ -27,13 +27,13 @@ class DepositController extends Controller
     }
 
     /**
-     * 💰 Menyimpan transaksi deposit (manual atau Jayapay)
+     * 💰 Menyimpan transaksi deposit (manual atau TopPayment)
      */
     public function store(Request $request)
     {
         $request->validate([
             'nominal' => 'required|numeric|min:1000',
-            'type'    => 'required|in:1,3', // 1=Manual, 3=Jayapay
+            'type'    => 'required|in:1,3', // 1=Manual, 3=TopPayment
             'rek_pengirim' => 'nullable|string|max:255',
             'bank_id' => 'nullable',
             'bonus_id' => 'nullable|exists:bonuses,id',
@@ -48,14 +48,14 @@ class DepositController extends Controller
             $transaksi->bank_id = $request->bank_id;
             $transaksi->trans_id = 'TRX' . time();
             $transaksi->rek_pengirim = $request->rek_pengirim ?? null;
-            $transaksi->status = ($request->type == 3) ? 2 : 1; // Jayapay auto approved
+            $transaksi->status = ($request->type == 3) ? 2 : 1; // TopPayment auto approved
             $transaksi->approved_by = ($request->type == 3) ? 'jayapay_auto' : null;
             $transaksi->keterangan = $request->keterangan ?? 'Deposit';
             $transaksi->bonus_id = $request->bonus_id ?? null;
             $transaksi->bonus_persentase = $request->bonus_persentase ?? null;
             $transaksi->save();
 
-            // Jika Jayapay, langsung proses ke Fiver
+            // Jika TopPayment, langsung proses ke Fiver
             if ($request->type == 3) {
                 $this->processFiverDeposit($transaksi, 'jayapay_auto');
             }

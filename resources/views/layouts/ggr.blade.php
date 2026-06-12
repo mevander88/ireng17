@@ -2,18 +2,26 @@
 <html lang="id" class="dark">
 <head>
     @php
+        $setting = $setting ?? \App\Models\Setting::first();
         $brandName = $setting->nama_web ?? 'ireng17';
+        $theme = \App\Support\ThemePalette::resolve($setting->themes ?? null);
         $pageTitle = $title ?? $brandName;
         $seoDescription = $setting->seo_description
             ?? 'ireng17 adalah lobby game online dengan katalog slot, live casino, sportsbook, crash game, promo member, deposit cepat, dan navigasi mobile yang ringan.';
         $seoKeywords = $setting->seo_meta_keywords
             ?? 'ireng17, slot online, game slot, pragmatic play, pg soft, mahjong ways, live casino, sportsbook, deposit qris';
-        $seoImage = ($setting->seo_banner ?? null) ?: asset('assets/images/provider-covers/spribe-aviator.svg');
+        $seoImage = !empty($setting->seo_banner)
+            ? asset('storage/' . $setting->seo_banner)
+            : asset('assets/images/provider-covers/spribe-aviator.svg');
+        $socialDescription = $setting->seo_social_description ?: $seoDescription;
         $siteLogo = !empty($setting->logo)
             ? asset('storage/' . $setting->logo)
             : asset('assets/images/provider-covers/spribe-aviator.svg');
+        $siteFavicon = !empty($setting->favicon)
+            ? asset('storage/' . $setting->favicon)
+            : asset('favicon.ico');
         $canonicalUrl = url()->current();
-        $ampUrl = config('app.amp_url') ?: url('/amp.html');
+        $ampUrl = config('app.amp_url') ?: url('/amp');
         $isHomePage = request()->getPathInfo() === '/';
         $siteCssPath = public_path('assets/css/ggr-site.css');
         $siteCssVersion = is_file($siteCssPath) ? filemtime($siteCssPath) : time();
@@ -54,19 +62,28 @@
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="{{ $brandName }}">
     <meta property="og:title" content="{{ $pageTitle }}">
-    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:description" content="{{ $socialDescription }}">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:image" content="{{ $seoImage }}">
     <meta property="og:image:alt" content="{{ $brandName }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $pageTitle }}">
-    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:description" content="{{ $socialDescription }}">
     <meta name="twitter:image" content="{{ $seoImage }}">
-    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ $faviconVersion }}" sizes="any">
+    <link rel="icon" href="{{ $siteFavicon }}?v={{ $faviconVersion }}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}?v={{ $faviconVersion }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon-16x16.png') }}?v={{ $faviconVersion }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ $faviconVersion }}">
     <link rel="stylesheet" href="{{ asset('assets/css/ggr-site.css') }}?v={{ $siteCssVersion }}">
+    <style>
+        :root {
+            --primary: {{ $theme['primary'] }};
+            --primary-solid: {{ $theme['primary_solid'] }};
+            --primary-deep: {{ $theme['primary_deep'] }};
+            --gold: {{ $theme['gold'] }};
+            --gold-soft: {{ $theme['gold_soft'] }};
+        }
+    </style>
     <script type="application/ld+json">
         @json($siteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
     </script>

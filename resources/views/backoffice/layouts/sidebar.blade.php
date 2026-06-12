@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ URL::to('backoffice') }}" class="brand-link" aria-label="Dashboard backoffice">
-        <img src="{{ asset('storage/' . $setting->logo) }}" alt="{{ $setting->nama_web ?? 'ireng17' }}" class="brand-image-admin">
+        <img src="{{ !empty($setting->logo) ? asset('storage/' . $setting->logo) : asset('assets/images/logo.png') }}" alt="{{ $setting->nama_web ?? 'ireng17' }}" class="brand-image-admin">
     </a>
 
     <div class="sidebar">

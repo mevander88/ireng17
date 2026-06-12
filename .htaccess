@@ -2,6 +2,18 @@
 Options +FollowSymLinks
 RewriteEngine On
 
+<FilesMatch "^(\.env|\.env\..*|\.git|composer\.(json|lock|phar)|package(-lock)?\.json|artisan|phpunit\.xml)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+RedirectMatch 404 ^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$)
+
 RewriteCond %{REQUEST_URI} !^/public/ 
 
 RewriteCond %{REQUEST_FILENAME} !-d

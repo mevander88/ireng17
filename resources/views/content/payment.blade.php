@@ -27,7 +27,7 @@
                             <span class="material-symbols-outlined">qr_code_2</span>
                             <div>
                                 <small>Metode Pembayaran</small>
-                                <strong>JayaPay Otomatis</strong>
+                                <strong>TopPayment Otomatis</strong>
                                 <p>QRIS</p>
                             </div>
                         </div>

@@ -35,12 +35,19 @@ Runtime:
 - `SESSION_LIFETIME`
 - `SESSION_SECURE_COOKIE`
 
-Jayapay:
+TopPayment:
 
+- `TOPPAYMENT_MERCHANT_CODE`
+- `TOPPAYMENT_PRIVATE_KEY_PATH`
+- `TOPPAYMENT_PUBLIC_KEY_PATH`
+- `TOPPAYMENT_API_URL`
+- `TOPPAYMENT_QUERY_URL`
+- `TOPPAYMENT_NOTIFY_URL`
 - `JAYAPAY_MERCHANT_CODE`
 - `JAYAPAY_PRIVATE_KEY_PATH`
 - `JAYAPAY_PUBLIC_KEY_PATH`
 - `JAYAPAY_API_URL`
+- `JAYAPAY_QUERY_URL`
 - `JAYAPAY_NOTIFY_URL`
 
 GGR:
@@ -48,6 +55,10 @@ GGR:
 - `GGR_API_URL`
 - `GGR_AGENT_CODE`
 - `GGR_AGENT_TOKEN`
+
+Catatan: class legacy `App\Http\Api\fiver` membaca konfigurasi aktif dari table `api`
+(`nx_endpoint`, `nx_agent_code`, `nx_token`). Endpoint GGR harus diambil dari halaman
+profile agent `https://{SERVER}/app/profile`.
 
 Mail:
 
@@ -149,8 +160,8 @@ Developer-only menu allows only `2`.
 Upload/generate these on the server:
 
 - `.env`
-- `storage/app/private_pkcs8.pem`
-- `storage/app/jayapay_public.pem`
+- `storage/app/toppayment_private.pem`
+- `storage/app/toppayment_public.pem`
 - `public/storage` symlink from `php artisan storage:link`
 - runtime uploads under `storage/app/public`
 - cache files under `bootstrap/cache`

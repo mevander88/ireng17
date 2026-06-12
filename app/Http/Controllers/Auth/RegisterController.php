@@ -3,17 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Api\fiver;
-use App\Http\IP\IP;
 use App\Models\User;
 use App\Models\Saldo;
 use App\Models\Network;
 use Illuminate\Support\Str;
-use App\Http\Api\softgaming;
-use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
@@ -44,7 +40,7 @@ class RegisterController extends Controller
     protected $redirectTo = RouteServiceProvider::HOME;
     protected function redirectTo()
     {
-        if (auth()->user()->level == 'Admin' || auth()->user()->level == 'Developer') {
+        if (in_array((int) auth()->user()->level, [1, 2], true)) {
             return '/backoffice';
         }
         return '/';

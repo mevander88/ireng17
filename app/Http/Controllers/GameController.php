@@ -3,14 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Http\Api\fiver;
-use App\Models\Game;
-use App\Http\Api\softgaming;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class GameController extends Controller
 {
+    public function subGameLaunch(Request $request)
+    {
+        $validated = $request->validate([
+            'game_code' => 'required|string',
+            'provider' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        if (! $user) {
+            return redirect()->route('login')->with('error', 'Masuk ke akun Anda untuk membuka permainan.');
+        }
+
+        $response = (new fiver())->opengame(
+            $user->name,
+            $validated['game_code'],
+            $validated['provider'],
+            'id'
+        );
+
+        $data = json_decode($response, true);
+
+        if (isset($data['status']) && in_array($data['status'], [1, '1', 'success', 'SUCCESS'], true) && !empty($data['launch_url'])) {
+            return redirect()->away($data['launch_url']);
+        }
+
+        Log::error('Fiver API error on subGameLaunch', [
+            'user' => $user->name,
+            'request' => $validated,
+            'response' => $response,
+        ]);
+
+        return back()->with('error', 'Permainan belum bisa dibuka saat ini. Silakan coba lagi beberapa saat.');
+    }
+
     public function connect_games($game)
     {
         $fiver = new fiver();

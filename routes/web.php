@@ -1,30 +1,12 @@
 <?php
 
-use App\Models\Game;
-use App\Models\User;
-use App\Models\Saldo;
-use App\Models\Banner;
-use App\Http\Api\fiver;
-use App\Models\Setting;
-use App\Models\Game_api;
-use App\Models\Game_list;
-use App\Models\Transaksi;
-use App\Models\Fiver_Game;
-use Illuminate\Http\Request;
-use App\Models\BannerPromosi;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\ActivateController;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\GgrSiteController;
-use App\Http\Controllers\GameCatalogController;
+use App\Http\Controllers\GgrAmpController;
+use App\Http\Controllers\GgrSeamlessController;
 use App\Http\Controllers\SpinController;
-use Illuminate\Support\Facades\Redirect;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\InjectController;
 use App\Http\Controllers\AddGameController;
 use App\Http\Controllers\SettingController;
@@ -34,23 +16,17 @@ use App\Http\Controllers\TurnoverController;
 
 
 use App\Http\Controllers\AdminLoginController;
-use App\Http\Controllers\Api\WzGamesController;
 use App\Http\Controllers\UserDepositController;
 use App\Http\Controllers\UserHistoryController;
 use App\Http\Controllers\UserWithdrawController;
 use App\Http\Controllers\UserPernyataanController;
-use App\Http\Controllers\backoffice\IconController;
 use App\Http\Controllers\GetSaldoController;
-use App\Http\Controllers\Auth\RegisterController;
 
-use App\Http\Controllers\backoffice\LogoController;
 use App\Http\Controllers\backoffice\BonusController;
-use App\Http\Controllers\RegisterRefferalController;
 use App\Http\Controllers\backoffice\BannerController;
 use App\Http\Controllers\backoffice\DepositController;
 use App\Http\Controllers\backoffice\GameAPIController;
 use App\Http\Controllers\backoffice\GgrBackofficeController;
-use App\Http\Controllers\backoffice\PromosiController;
 use App\Http\Controllers\backoffice\WithdrawController;
 use App\Http\Controllers\backoffice\BackofficeController;
 use App\Http\Controllers\backoffice\DatamemberController;
@@ -82,13 +58,6 @@ Route::post('/validate-voucher', [SpinController::class, 'validateVoucher']);
 Route::get('/spin', [SpinController::class, 'index']);
 Route::POST('/save-prize', [SpinController::class, 'spinPrize']);
 
-Route::get('/clear-cache', function () {
-    $exitCode = Artisan::call('cache:clear');
-    $exitCode = Artisan::call('config:cache');
-    return 'DONE'; //Return anything
-});
-
-
 #region user ( no login allowed )
 
 
@@ -97,14 +66,7 @@ Route::get('/', [GgrSiteController::class, 'home']);
 Route::get('/referral-register', [RefferalController::class, 'loadRefferal']);
 Route::post('/referral-register/store', [RefferalController::class, 'store'])->name('store');
 
- //Route::get('/activate', [ActivateController::class, 'index'])->name('activate.page');
-// Route::post('/activate/post', [ActivateController::class, 'activate'])->name('activate.post');
-// Route::get('/activate/verify', [ActivateController::class, 'verify']);
-
-Route::get('/promotion', function () {
-    $banners = BannerPromosi::all();
-    return view('promotion', compact('banners'));
-});
+Route::get('/promotion', [GgrSiteController::class, 'promotion']);
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
@@ -115,9 +77,7 @@ Route::redirect('/complain-form', '/');
 
 Route::get('/sports', [GgrSiteController::class, 'providers'])->defaults('type', 'SB');
 
-Route::get('/spxkid', function () {
-    abort(404);
-});
+Route::get('/spxkid', [GgrSiteController::class, 'notFound']);
 
 
 
@@ -143,29 +103,7 @@ Route::redirect('/complain', '/');
 Route::redirect('/refferal', '/register');
 
 
-Route::get('/username_phone', function (Request $request) {
-
-    $username = addslashes(base64_decode($request->username));
-    $phone = addslashes(base64_decode($request->phone));
-
-    // check  current username
-    $data_name = User::where([
-        'name' => $username
-    ])->first();
-
-    // check current phone number
-    $data_phone = User::where([
-        'telp' => $phone
-    ])->first();
-
-
-    // true is avail
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
-        'username' => empty($data_name),
-        'phone' => empty($data_phone)
-    ]);
-});
+Route::get('/username_phone', [GgrSiteController::class, 'usernamePhone']);
 Route::get('/admins', [AdminLoginController::class, 'index']);
 Route::POST('/admins/login', [AdminLoginController::class, 'auth'])->name('admin.login');
 Route::group(['middleware' => 'auth'], function () {
@@ -177,6 +115,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/withdraw', WithdrawController::class);
         Route::resource('/histori_transaksi', HistoritransaksiController::class);
         Route::get('/backoffice/ggr', [GgrBackofficeController::class, 'index'])->name('backoffice.ggr');
+        Route::post('/backoffice/ggr/test-provider-api', [GgrBackofficeController::class, 'testProviderApi'])->name('backoffice.ggr.testProviderApi');
         Route::post('/backoffice/ggr/sync-providers', [GgrBackofficeController::class, 'syncProviders'])->name('backoffice.ggr.syncProviders');
         Route::post('/backoffice/ggr/sync-games', [GgrBackofficeController::class, 'syncGames'])->name('backoffice.ggr.syncGames');
         Route::post('/backoffice/ggr/sync-provider/{code}', [GgrBackofficeController::class, 'syncProvider'])->name('backoffice.ggr.syncProvider');
@@ -204,11 +143,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/update/api/ng', [SettingController::class, 'apiNG'])->name('api.ng');
 
         Route::group(['middleware' => 'dev_mode'], function () {
+            Route::get('/clear-cache', [BackofficeController::class, 'clearCache'])->name('admin.clear-cache');
+
             Route::get('/voucher-lucky-spin', [VoucherController::class, 'index']);
             Route::post('/generate-voucher', [VoucherController::class, 'generateVoucher']);
             
             Route::post('/call-list', [GameSettingController::class, 'callList']);
             Route::post('/call-apply', [GameSettingController::class, 'callApply']);
+            Route::get('/call-history', [GameSettingController::class, 'callHistory']);
+            Route::post('/call-cancel', [GameSettingController::class, 'callCancel']);
+            Route::post('/control-rtp', [GameSettingController::class, 'controlRtp']);
             Route::resource('/deposit_bank', DepositbankController::class)->only(['index', 'store', 'update', 'destroy']);
             Route::post('/fetch-game-history', [HistoryPlayController::class, 'getGameHistory'])
     ->name('fetch.game.history');
@@ -222,7 +166,7 @@ Route::get('/history-play/user', [HistoryPlayController::class, 'showForm'])
             Route::resource('/banner_promosi', BannerPromosiController::class);
             Route::resource('/bonus', BonusController::class);
             Route::resource('/game_setting', GameSettingController::class)->only(['index', 'update']);
-            Route::resource('/game_api', GameAPIController::class);
+            Route::resource('/game_api', GameAPIController::class)->only(['index']);
             Route::get('/add-games', [AddGameController::class, 'index']);
             Route::delete('/delete-games', [AddGameController::class, 'deleteGames']);
             Route::get('/game_setting_lock', [GameSettingController::class, 'lock']);
@@ -239,44 +183,10 @@ Route::get('/history-play/user', [HistoryPlayController::class, 'showForm'])
         });
     });
 
-    Route::post('/create-payment', [PaymentGatewayController::class, 'createPayment'])->name('create-payment');
     Route::get('/payment/status', [PaymentGatewayController::class, 'statusPayment'])->name('status.payment');
-    Route::get('/qrcode/show', function(Request $request) {
-        $decodedUrl = base64_decode($request->encodedUrl);
-        return redirect($decodedUrl);
-    })->name('qrcode.show');
+    Route::get('/qrcode/show', [PaymentGatewayController::class, 'showQrcode'])->name('qrcode.show');
     Route::get('/payment/qris', [PaymentGatewayController::class, 'paymentQris'])->name('bayar.qris');
-    Route::post('/payment/create', [PaymentGatewayController::class, 'createPayment'])->name('payment.create');
-    Route::post('/jayapay/create', [PaymentGatewayController::class, 'createPayment'])->name('jayapay.create');
-    Route::post('/jayapay/payment', [PaymentGatewayController::class, 'createPayment'])->name('jayapay.payment');
-    Route::get('/subGameLaunch', function (Request $request) {
-        $validated = $request->validate([
-            'game_code' => 'required|string',
-            'provider' => 'required|string',
-        ]);
-
-        $fiver = new fiver();
-        $response = $fiver->opengame(
-            Auth::user()->name,
-            $validated['game_code'],
-            $validated['provider'],
-            'id'
-        );
-
-        $data = json_decode($response, true);
-
-        if (isset($data['status']) && in_array($data['status'], [1, '1', 'success', 'SUCCESS'], true) && !empty($data['launch_url'])) {
-            return redirect()->away($data['launch_url']);
-        }
-
-        \Log::error('Fiver API error on subGameLaunch', [
-            'user' => Auth::user()->name,
-            'request' => $validated,
-            'response' => $response,
-        ]);
-
-        return back()->with('error', 'Permainan belum bisa dibuka saat ini. Silakan coba lagi beberapa saat.');
-    });
+    Route::get('/subGameLaunch', [GameController::class, 'subGameLaunch']);
 
 
 
@@ -286,35 +196,8 @@ Route::get('/history-play/user', [HistoryPlayController::class, 'showForm'])
     Route::POST('/turnover', [TurnoverController::class, 'turnOver']);
     Route::GET('/promo/saya', [TurnoverController::class, 'index']);
     Route::POST('/promo/bonus', [TurnoverController::class, 'getBonusPromotion']);
-    Route::get('/saldo-refresh', function () {
-        $localSaldo = (float) (Saldo::where('user_id', Auth::id())->value('saldo') ?? 0);
-
-        try {
-            $SG = new fiver();
-            $act = json_decode($SG->userbalance(Auth::user()->name));
-            $apiBalance = data_get($act, 'user.balance');
-
-            if ($apiBalance !== null && is_numeric($apiBalance)) {
-                return response()->json([
-                    'error' => false,
-                    'balance' => (float) $apiBalance,
-                    'source' => 'api',
-                ]);
-            }
-        } catch (\Throwable $e) {
-            \Log::warning('Saldo refresh API gagal', [
-                'user_id' => Auth::id(),
-                'message' => $e->getMessage(),
-            ]);
-        }
-
-        return response()->json([
-            'error' => false,
-            'balance' => $localSaldo,
-            'source' => 'local',
-        ]);
-    });
-    Route::resource('/account/deposit', UserDepositController::class)->only(['index', 'store']);
+    Route::get('/saldo-refresh', [GetSaldoController::class, 'refresh']);
+    Route::resource('/account/deposit', UserDepositController::class)->only(['index', 'store'])->names('account.deposit');
     Route::get('/account/withdrawal', [UserWithdrawController::class, 'index']);
     Route::POST('/withdrawal/user', [UserWithdrawController::class, 'store']);
     Route::get('/wdcuy', [UserWithdrawController::class, 'WD']);
@@ -328,8 +211,9 @@ Route::get('/history-play/user', [HistoryPlayController::class, 'showForm'])
 Route::get('/ggr/provider/{slug}', [GgrSiteController::class, 'providerGames'])->name('ggr.provider');
 Route::get('/slots/game_list/{slug}', [GgrSiteController::class, 'providerGames']);
 Route::redirect('/game/sports/game_list/IBC', '/sports');
+Route::get('/amp', [GgrAmpController::class, 'index'])->name('ggr.amp');
+Route::post('/gold_api', [GgrSeamlessController::class, 'handle'])->name('ggr.seamless');
 Route::get('/game_process/{game}', [GameController::class, 'connect_games'])->where('game', '.*');
-Route::post('/jayapay/callback', [PaymentGatewayController::class, 'callback']);
 
 
 Auth::routes();

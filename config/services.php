@@ -31,4 +31,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'provider_ssl_verify' => env('PROVIDER_SSL_VERIFY', true),
+
 ];

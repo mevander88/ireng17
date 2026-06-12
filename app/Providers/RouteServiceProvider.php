@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CachedImageController;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,10 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
+            Route::get('/cached-image/{hash}', [CachedImageController::class, 'show'])
+                ->where('hash', '[a-f0-9]{40}')
+                ->name('image.cache');
+
             Route::middleware('api')
                 ->prefix('api')
                 ->namespace($this->namespace)

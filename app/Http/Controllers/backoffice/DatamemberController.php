@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\backoffice;
 
 use App\Http\Api\fiver;
-use App\Http\Api\ngaming;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Bank;
@@ -12,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
-use App\Http\Api\softgaming;
 use App\Models\Network;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;

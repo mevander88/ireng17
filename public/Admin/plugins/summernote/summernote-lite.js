@@ -10780,4 +10780,3 @@ var ui = function ui(editorOptions) {
 /******/ })()
 ;
 });
-//# sourceMappingURL=summernote-lite.js.map

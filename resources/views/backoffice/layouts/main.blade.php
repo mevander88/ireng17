@@ -2,10 +2,16 @@
 use App\Models\Setting;
 
 $setting = Setting::first();
+$theme = \App\Support\ThemePalette::resolve($setting->themes ?? null);
+$brandName = $setting->nama_web ?? 'ireng17';
+$seoDescription = $setting->seo_description ?? 'ireng17 Panel';
 $adminCssPath = public_path('Admin/css/ireng-admin.css');
 $adminCssVersion = is_file($adminCssPath) ? filemtime($adminCssPath) : time();
 $faviconPath = public_path('favicon.ico');
 $faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
+$siteFavicon = !empty($setting->favicon)
+    ? asset('storage/' . $setting->favicon)
+    : asset('favicon.ico');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +19,7 @@ $faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $setting->nama_web }} : Dashboard Panel</title>
+    <title>{{ $brandName }} : Dashboard Panel</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
@@ -55,7 +61,15 @@ $faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Montserrat:wght@700;800&display=swap">
     <link rel="stylesheet" href="{{ asset('Admin/css/ireng-admin.css') }}?v={{ $adminCssVersion }}">
-    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ $faviconVersion }}" sizes="any">
+    <style>
+        body.ireng-admin-dark {
+            --bo-purple: {{ $theme['primary'] }};
+            --bo-purple-solid: {{ $theme['primary_solid'] }};
+            --bo-gold: {{ $theme['gold'] }};
+            --bo-gold-soft: {{ $theme['gold_soft'] }};
+        }
+    </style>
+    <link rel="icon" href="{{ $siteFavicon }}?v={{ $faviconVersion }}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}?v={{ $faviconVersion }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon-16x16.png') }}?v={{ $faviconVersion }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ $faviconVersion }}">
@@ -86,9 +100,9 @@ $faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
         <!-- /.content-wrapper -->
         <footer class="main-footer">
             <strong>
-                <!-- --> &copy; 2024 <a href="#">{{ $setting->nama_web }}</a>.
+                <!-- --> &copy; 2024 <a href="#">{{ $brandName }}</a>.
             </strong>
-            {{ $setting->seo_description }}
+            {{ $seoDescription }}
 
             <div class="float-right d-none d-sm-inline-block">
                 <a target="_blank" rel="noopener noreferrer" href="{{ URL::to('/') }}" class="href">
@@ -128,9 +142,7 @@ $faviconVersion = is_file($faviconPath) ? filemtime($faviconPath) : time();
     <script src="{{ asset('Admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}">
     </script>
     <!-- AdminLTE App -->
-    <script src="{{ asset('Admin/dist/js/adminlte.js') }}"></script>
-    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="{{ asset('Admin/dist/js/pages/dashboard.js') }}"></script>
+    <script src="{{ asset('Admin/dist/js/adminlte.min.js') }}"></script>
     <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.css" />
     <!-- DataTables  & Plugins -->
     <script src="{{ asset('Admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
