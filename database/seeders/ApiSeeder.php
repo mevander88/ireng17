@@ -15,8 +15,8 @@ class ApiSeeder extends Seeder
         Api::updateOrCreate(
             ['id' => 1],
             [
-                'nx_agent_code' => env('GGR_AGENT_CODE', 'akurat77'),
-                'nx_token' => env('GGR_AGENT_TOKEN', 'd90e23be49fc8b08065acf6a0473214e'),
+                'nx_agent_code' => env('GGR_AGENT_CODE'),
+                'nx_token' => env('GGR_AGENT_TOKEN'),
                 'nx_endpoint' => env('GGR_API_URL', 'https://api.nexusggr.com'),
                 'nx_status' => 1,
                 'sg_status' => 0,

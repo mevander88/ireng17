@@ -15,7 +15,7 @@ return new class extends Migration
         $this->addUniqueIfSafe('users', 'users_name_unique', ['name']);
         $this->addUniqueIfSafe('saldo', 'saldo_user_id_unique', ['user_id']);
         $this->addUniqueIfSafe('networks', 'networks_user_id_unique', ['user_id']);
-        $this->addUniqueIfSafe('networks', 'networks_ref_code_unique', ['ref_code']);
+        $this->addIndexIfMissing('networks', 'networks_ref_code_index', ['ref_code']);
         $this->addUniqueIfSafe('transaksi', 'transaksi_trans_id_unique', ['trans_id']);
         $this->addUniqueIfSafe('transaksi', 'transaksi_external_id_unique', ['external_id']);
         $this->addIndexIfMissing('transaksi', 'transaksi_user_type_status_created_index', ['user_id', 'type', 'status', 'created_at']);
@@ -55,7 +55,7 @@ return new class extends Migration
             ['transaksi', 'transaksi_user_type_status_created_index'],
             ['transaksi', 'transaksi_external_id_unique'],
             ['transaksi', 'transaksi_trans_id_unique'],
-            ['networks', 'networks_ref_code_unique'],
+            ['networks', 'networks_ref_code_index'],
             ['networks', 'networks_user_id_unique'],
             ['saldo', 'saldo_user_id_unique'],
             ['users', 'users_name_unique'],

@@ -10,6 +10,7 @@ use App\Models\Transaksi;
 use App\Models\User;
 use App\Models\Saldo;
 use App\Http\Api\fiver;
+use App\Services\ReferralCommissionService;
 use Illuminate\Support\Facades\DB;
 
 class PaymentGatewayController extends Controller
@@ -315,7 +316,7 @@ class PaymentGatewayController extends Controller
                 // ===========================================
 
                 $SG = new fiver();
-                $depositRes = json_decode($SG->deposit($user->name, $bonusTotal));
+                $depositRes = json_decode($SG->deposit($user->name, $bonusTotal, $trx->trans_id));
 
                 // Fiver return:
                 // { "status": 1, "msg": "SUCCESS", ... }
@@ -324,9 +325,6 @@ class PaymentGatewayController extends Controller
                     Log::error("âŒ Deposit ke Fiver gagal", (array) $depositRes);
                     return response("Fiver Error", 500);
                 }
-
-                // Delay 2 detik agar saldo Fiver update
-                sleep(2);
 
                 $balance = json_decode($SG->userbalance($user->name));
                 $newBalance = $balance->user->balance ?? null;
@@ -360,6 +358,8 @@ class PaymentGatewayController extends Controller
                     'keterangan' => 'Deposit otomatis via TopPayment',
                     'created_at' => now(),
                 ]);
+
+                app(ReferralCommissionService::class)->creditForDeposit($trx->fresh());
 
                 Log::info("âœ… Deposit TopPayment sukses untuk {$user->name}");
             } else {
@@ -410,7 +410,7 @@ class PaymentGatewayController extends Controller
             : $trx->nominal;
 
         $SG = new fiver();
-        $depositRes = json_decode($SG->deposit($user->name, $bonusTotal));
+        $depositRes = json_decode($SG->deposit($user->name, $bonusTotal, $trx->trans_id));
 
         if (!isset($depositRes->status) || !in_array($depositRes->status, [1, '1', 'success', 'SUCCESS'], true)) {
             $trx->update(['alasan' => $depositRes->msg ?? 'Deposit ke provider gagal.']);
@@ -418,7 +418,6 @@ class PaymentGatewayController extends Controller
             return false;
         }
 
-        sleep(2);
         $balance = json_decode($SG->userbalance($user->name));
         $newBalance = $balance->user->balance ?? null;
         if ($newBalance === null) {
@@ -447,6 +446,8 @@ class PaymentGatewayController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        app(ReferralCommissionService::class)->creditForDeposit($trx->fresh());
 
         return true;
     }

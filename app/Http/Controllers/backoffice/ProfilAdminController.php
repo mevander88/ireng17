@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 
 class ProfilAdminController extends Controller
 {
@@ -57,7 +58,14 @@ class ProfilAdminController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = User::find($id);
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telp' => 'nullable|string|max:30',
+            'photo' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:2048',
+        ]);
+
+        $data = User::findOrFail($id);
         $data->name = $request->username;
         $data->email = $request->email;
         $data->telp = $request->telp;
@@ -68,8 +76,9 @@ class ProfilAdminController extends Controller
                 unlink($file_path);
             }
 
-            $imgname = time() . '_' . $request->photo->getClientOriginalName();
-            $request->photo->move(public_path() . '/storage/photo/', $imgname);
+            File::ensureDirectoryExists(public_path('storage/photo'));
+            $imgname = time() . '_' . Str::random(12) . '.' . $request->file('photo')->extension();
+            $request->file('photo')->move(public_path('storage/photo'), $imgname);
 
             $data->photo = $imgname;
         }

@@ -161,6 +161,20 @@
                                 Copy
                             </button>
                         </div>
+                        <div class="ggr-stat-grid ggr-profile-stat-grid" style="margin-top:16px;">
+                            <div class="ggr-stat-card">
+                                <small>Member referral</small>
+                                <strong>{{ number_format($referralSummary['members'] ?? 0, 0, ',', '.') }}</strong>
+                            </div>
+                            <div class="ggr-stat-card">
+                                <small>Total penghasilan</small>
+                                <strong>Rp {{ number_format($referralSummary['paid_total'] ?? 0, 0, ',', '.') }}</strong>
+                            </div>
+                            <div class="ggr-stat-card">
+                                <small>Komisi sukses</small>
+                                <strong>{{ number_format($referralSummary['paid_count'] ?? 0, 0, ',', '.') }}</strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

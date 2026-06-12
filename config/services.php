@@ -33,4 +33,21 @@ return [
 
     'provider_ssl_verify' => env('PROVIDER_SSL_VERIFY', true),
 
+    'ggr' => [
+        'api_url' => env('GGR_API_URL'),
+        'agent_code' => env('GGR_AGENT_CODE'),
+        'agent_token' => env('GGR_AGENT_TOKEN'),
+    ],
+
+    'image_cache_max_bytes' => (int) env('IMAGE_CACHE_MAX_BYTES', 5 * 1024 * 1024),
+    'image_cache_allowed_hosts' => array_values(array_filter(array_map(
+        static fn ($host) => strtolower(trim($host)),
+        explode(',', (string) env('IMAGE_CACHE_ALLOWED_HOSTS', ''))
+    ))),
+
+    'lucky_spin_prizes' => array_values(array_filter(array_map(
+        static fn ($amount) => (int) trim($amount),
+        explode(',', (string) env('LUCKY_SPIN_PRIZES', ''))
+    ))),
+
 ];

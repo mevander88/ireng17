@@ -159,6 +159,7 @@ Ada dua sumber konfigurasi API:
    - `GGR_AGENT_CODE`
    - `GGR_AGENT_TOKEN`
    - `TOPPAYMENT_*` / `JAYAPAY_*` alias
+   - `LUCKY_SPIN_PRIZES` jika fitur lucky spin dipakai, contoh `1000,2000,5000`
 
 2. Database table `api`
    - `nx_agent_code`
@@ -178,7 +179,7 @@ TopPayment dibaca dari `.env` lewat `config/jayapay.php`. Prefix `JAYAPAY_*` mas
 Minimal:
 
 ```env
-TOPPAYMENT_MERCHANT_CODE=TOP1B10124
+TOPPAYMENT_MERCHANT_CODE=isi_merchant_code
 TOPPAYMENT_PRIVATE_KEY_PATH=storage/app/toppayment_private.pem
 TOPPAYMENT_PUBLIC_KEY_PATH=storage/app/toppayment_public.pem
 TOPPAYMENT_API_URL=https://global-id-openapi.toppayment.com/id/pay/prePay

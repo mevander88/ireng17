@@ -217,7 +217,7 @@
                                             <img src="{{ $logoPreview }}" alt="Logo {{ $setting->nama_web }}" style="max-height:56px;max-width:220px;background:#111;border:1px solid #333;border-radius:8px;padding:8px;">
                                         </div>
                                         <input name="logo" type="file" class="form-control uploads"
-                                            accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml">
+                                            accept="image/png, image/jpeg, image/webp, image/gif">
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label class="form-text text-muted">Favicon :</label>
@@ -297,7 +297,7 @@
                                                 </div>
                                             @endif
                                             <input name="popup" type="file" class="form-control uploads"
-                                                accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml, video/mp4, video/webm">
+                                                accept="image/png, image/jpeg, image/webp, image/gif, video/mp4, video/webm">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
@@ -351,7 +351,7 @@
                                     <div class="col-12 col-md-6">
                                         <label class="form-text text-muted">Merchant Number :</label>
                                         <input class="form-control" name="merchantCode"
-                                            value="{{ old('merchantCode', $topPayment['merchant_code'] ?? '') }}" type="text" placeholder="TOP1B10124" required>
+                                            value="{{ old('merchantCode', $topPayment['merchant_code'] ?? '') }}" type="text" placeholder="isi merchant code" required>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label class="form-text text-muted">Status QRIS :</label>

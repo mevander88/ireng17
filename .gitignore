@@ -2,12 +2,15 @@
 /node_modules
 /public/build
 /public/hot
+/public/image-cache
 /public/storage
 /public/.well-known/
 /bootstrap/cache/*.php
 /storage/*.key
 /storage/app/*.pem
+/storage/app/image-cache
 /vendor
+composer.phar
 stitch_aplikasi_slot/
 database/*.sql
 !database/ireng17_full_dump.sql

@@ -25,6 +25,14 @@ class AdminLoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            if (!in_array((int) Auth::user()->level, [1, 2], true)) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->with('LoginError', 'Username atau kata sandi admin tidak sesuai.');
+            }
+
             $request->session()->regenerate();
             return redirect('/backoffice');
         }

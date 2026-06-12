@@ -285,6 +285,22 @@ CREATE TABLE `networks` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DROP TABLE IF EXISTS `referral_commissions`;
+CREATE TABLE `referral_commissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `transaksi_id` bigint(20) UNSIGNED NOT NULL,
+  `referred_user_id` bigint(20) UNSIGNED NOT NULL,
+  `referrer_user_id` bigint(20) UNSIGNED NOT NULL,
+  `referral_code` varchar(50) DEFAULT NULL,
+  `deposit_amount` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `commission_amount` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `status` varchar(20) NOT NULL DEFAULT 'pending',
+  `provider_response` text DEFAULT NULL,
+  `paid_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `password_resets`;
 CREATE TABLE `password_resets` (
   `email` varchar(255) NOT NULL,
@@ -536,7 +552,17 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`) USING BTREE;
 
 ALTER TABLE `networks`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `networks_ref_code_index` (`ref_code`),
+  ADD UNIQUE KEY `networks_user_id_unique` (`user_id`);
+
+ALTER TABLE `referral_commissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `referral_commissions_transaksi_id_unique` (`transaksi_id`),
+  ADD KEY `referral_commissions_referred_user_id_index` (`referred_user_id`),
+  ADD KEY `referral_commissions_referrer_user_id_index` (`referrer_user_id`),
+  ADD KEY `referral_commissions_referral_code_index` (`referral_code`),
+  ADD KEY `referral_commissions_status_index` (`status`);
 
 ALTER TABLE `password_resets`
   ADD KEY `password_resets_email_index` (`email`) USING BTREE;
@@ -625,6 +651,9 @@ ALTER TABLE `migrations`
 
 ALTER TABLE `networks`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+ALTER TABLE `referral_commissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;

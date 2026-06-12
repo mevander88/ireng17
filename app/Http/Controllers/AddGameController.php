@@ -73,12 +73,6 @@ class AddGameController extends Controller
 
     public function deleteGames()
     {
-        // Menggunakan Eloquent
-        // FiverGame::whereBetween('id', [2015, 2220])->delete();
-
-        // Atau, menggunakan Query Builder
-        DB::table('fiver_games')->whereBetween('id', [3578, 4277])->delete();
-
-        return response()->json(['message' => 'Data berhasil dihapus'], 200);
+        abort(410, 'Endpoint hapus game massal sudah dinonaktifkan.');
     }
 }

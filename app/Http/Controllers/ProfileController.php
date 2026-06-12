@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Saldo;
 use App\Models\Setting;
 use App\Models\Transaksi;
+use App\Services\ReferralCommissionService;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
@@ -31,6 +32,7 @@ class ProfileController extends Controller
             && filled($user->bank)
             && filled($user->no_rek)
             && filled($user->telp);
+        $referralSummary = app(ReferralCommissionService::class)->summaryForUser($user->id);
 
         return view('profile', compact(
             'setting',
@@ -38,7 +40,8 @@ class ProfileController extends Controller
             'pendingDeposit',
             'successfulDeposits',
             'successfulWithdraws',
-            'accountComplete'
+            'accountComplete',
+            'referralSummary'
         ));
     }
 }

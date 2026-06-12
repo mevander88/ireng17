@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('networks', function (Blueprint $table) {
             $table->id();
-            $table->string('ref_code');
             $table->foreignId('user_id');
-            $table->foreignId('parnet_id');
+            $table->string('username', 50)->nullable();
+            $table->string('ref_code');
+            $table->foreignId('parent_id')->nullable();
             $table->timestamps();
         });
     }

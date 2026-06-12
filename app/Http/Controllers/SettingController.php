@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Api;
 use App\Models\Setting;
+use App\Support\SafeHtml;
 use App\Support\ThemePalette;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -79,7 +80,7 @@ class SettingController extends Controller
     public function updateAppearance(Request $request)
     {
         $request->validate([
-            'logo' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif,svg|max:4096',
+            'logo' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif|max:4096',
             'favicon' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif,ico|max:2048',
             'running_text' => 'nullable|string|max:255',
             'template' => 'nullable|string|max:50',
@@ -113,7 +114,7 @@ class SettingController extends Controller
     public function updatePopup(Request $request)
     {
         $request->validate([
-            'popup' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif,svg,mp4,webm|max:8192',
+            'popup' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif,mp4,webm|max:8192',
             'popup_enabled' => 'required|in:0,1',
             'popup_title' => 'nullable|string|max:120',
             'popup_bg' => 'nullable|regex:/^#[0-9A-Fa-f]{6}$/',
@@ -125,7 +126,7 @@ class SettingController extends Controller
         $popup = $this->settingRecord();
         $popup->popup_enabled = (int) $request->popup_enabled;
         $popup->popup_title = $request->popup_title;
-        $popup->msg_popup = $request->msg_popup;
+        $popup->msg_popup = SafeHtml::popup($request->msg_popup);
         $popup->popup_bg = $request->popup_bg ?: '#111111';
         $popup->popup_cta_text = $request->popup_cta_text;
         $popup->popup_cta_url = $request->popup_cta_url;
@@ -319,7 +320,7 @@ class SettingController extends Controller
             'maintenance_mode' => 0,
             'deposit_delay' => 24,
             'url_gateway' => 'https://global-id-openapi.toppayment.com/id/pay/prePay',
-            'apikey_gateway' => 'TOP1B10124',
+            'apikey_gateway' => (string) config('jayapay.merchant_code', ''),
             'callback_url' => config('jayapay.notify_url') ?: url('/api/jayapay/callback'),
             'qris_status' => 1,
             'minimal_depo' => 20000,
@@ -331,8 +332,8 @@ class SettingController extends Controller
     private function apiRecord(): Api
     {
         return Api::firstOrNew(['id' => 1], [
-            'nx_agent_code' => 'akurat77',
-            'nx_token' => 'd90e23be49fc8b08065acf6a0473214e',
+            'nx_agent_code' => (string) config('services.ggr.agent_code', ''),
+            'nx_token' => (string) config('services.ggr.agent_token', ''),
             'nx_secret' => '',
             'nx_endpoint' => '',
             'nx_status' => 0,

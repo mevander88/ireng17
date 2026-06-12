@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 
 class GameSettingController extends Controller
 {
@@ -59,6 +60,17 @@ class GameSettingController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $request->validate([
+                'nama_web' => 'nullable|string|max:120',
+                'telp' => 'nullable|string|max:30',
+                'wa' => 'nullable|string|max:30',
+                'tele' => 'nullable|string|max:80',
+                'running_text' => 'nullable|string|max:255',
+                'live_chat' => 'nullable|string',
+                'msg_popup' => 'nullable|string',
+                'logo' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif|max:4096',
+            ]);
+
             $data = Setting::findOrFail($id);
 
             $data->fill([
@@ -88,8 +100,9 @@ class GameSettingController extends Controller
                     unlink($file_path);
                 }
 
-                $imgname = time() . '_' . $request->logo->getClientOriginalName();
-                $request->logo->move(public_path('storage/logo/'), $imgname);
+                File::ensureDirectoryExists(public_path('storage/logo'));
+                $imgname = time() . '_' . Str::random(12) . '.' . $request->file('logo')->extension();
+                $request->file('logo')->move(public_path('storage/logo'), $imgname);
                 $data->logo = $imgname;
             }
 

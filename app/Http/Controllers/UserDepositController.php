@@ -9,6 +9,7 @@ use App\Models\Saldo;
 use App\Models\Setting;
 use App\Models\Transaksi;
 use App\Models\Network;
+use App\Services\ReferralCommissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -211,9 +212,6 @@ class UserDepositController extends Controller
             Log::info('📨 Respon dari Fiver (deposit):', (array) $res);
 
             if (in_array($res->status ?? null, [1, '1', 'success', 'SUCCESS'], true)) {
-                // Tunggu sebentar agar saldo benar-benar update di server Fiver
-                sleep(2);
-
                 $balanceRes = json_decode($SG->userbalance($user->name));
                 Log::info('📊 Respon dari Fiver (saldo):', (array) $balanceRes);
 
@@ -244,6 +242,8 @@ class UserDepositController extends Controller
                         'created_at'  => now(),
                         'updated_at'  => now(),
                     ]);
+
+                    app(ReferralCommissionService::class)->creditForDeposit($trx->fresh());
 
                     Log::info("✅ Deposit manual berhasil untuk {$user->name}");
                 } else {

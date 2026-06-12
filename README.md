@@ -35,7 +35,8 @@ Project ini memakai Laravel 10, MySQL/MariaDB, asset publik statis di `public`, 
 - `public/Admin`: asset backoffice AdminLTE yang sudah dibersihkan.
 - `database/ireng17_schema.sql`: schema database.
 - `database/ireng17_minimal_seed.sql`: seed minimal.
-- `database/ireng17_full_dump.sql`: full dump schema + data terbaru untuk import shared hosting.
+- `database/ireng17_full_dump.sql`: dump schema + data operasional non-secret untuk import shared hosting. Data user, transaksi, dan credential runtime tidak disimpan di repo.
+- `storage/app/public/banner-home`: asset banner yang direferensikan oleh dump/seed banner backoffice.
 - `.env.production.example`: template environment production.
 - `docs/DEPLOYMENT.md`: catatan deploy lebih detail.
 
@@ -186,9 +187,9 @@ Jika hosting tidak menyediakan terminal, gunakan workflow manual ini:
 2. Upload seluruh project termasuk folder `vendor` ke hosting. Tanpa `vendor`, Laravel tidak akan jalan.
 3. Arahkan document root domain ke folder `public`. Jika tidak bisa, upload project di luar `public_html` lalu isi `public_html` dengan isi folder `public`.
 4. Buat database dan user MySQL dari cPanel.
-5. Import `database/ireng17_full_dump.sql` lewat phpMyAdmin. File ini sudah berisi schema dan data terbaru.
+5. Import `database/ireng17_full_dump.sql` lewat phpMyAdmin. File ini berisi schema dan data operasional non-secret, termasuk banner/default setting yang aman dipush.
 6. Copy `.env.production.example` menjadi `.env` lewat File Manager.
-7. Isi `.env`: `APP_URL`, `AMP_URL`, database, `APP_KEY`, GGR, dan TopPayment.
+7. Isi `.env`: `APP_URL`, `AMP_URL`, database, `APP_KEY`, GGR, dan TopPayment. Jangan menaruh private key/token asli di repository.
 8. Jika belum punya `APP_KEY`, buat dari lokal dengan `php artisan key:generate --show`, lalu paste hasilnya ke `.env` hosting.
 9. Pastikan folder `storage`, `storage/logs`, `storage/framework/cache`, `storage/framework/sessions`, `storage/framework/views`, `bootstrap/cache`, `public/image-cache`, dan `public/storage` writable.
 10. Jika tidak bisa menjalankan `php artisan storage:link`, buat symlink dari fitur hosting jika ada. Jika tidak ada, copy isi `storage/app/public` ke `public/storage` setiap selesai upload asset backoffice.
@@ -231,6 +232,7 @@ Contoh `.env`:
 GGR_API_URL=https://api.nexusggr.com
 GGR_AGENT_CODE=agent_anda
 GGR_AGENT_TOKEN=token_anda
+LUCKY_SPIN_PRIZES=1000,2000,5000
 ```
 
 Setelah konfigurasi benar, sinkron katalog:
@@ -250,12 +252,12 @@ Frontend membaca `ggr_providers` dan `ggr_games` dari database lokal supaya hala
 
 ## Konfigurasi TopPayment / QRIS
 
-TopPayment dibaca dari `config/jayapay.php` melalui `.env`. Prefix `JAYAPAY_*` masih didukung sebagai alias lama.
+TopPayment dibaca dari `config/jayapay.php` melalui `.env`. Prefix `JAYAPAY_*` masih didukung sebagai alias lama. Merchant code, private key, platform public key, dan token provider harus dipasang langsung di server atau dari menu Backoffice, bukan di-commit ke GitHub.
 
 Contoh:
 
 ```env
-TOPPAYMENT_MERCHANT_CODE=TOP1B10124
+TOPPAYMENT_MERCHANT_CODE=isi_merchant_code
 TOPPAYMENT_PRIVATE_KEY_PATH=storage/app/toppayment_private.pem
 TOPPAYMENT_PUBLIC_KEY_PATH=storage/app/toppayment_public.pem
 TOPPAYMENT_API_URL=https://global-id-openapi.toppayment.com/id/pay/prePay
@@ -278,6 +280,23 @@ POST /jayapay/callback
 ```
 
 Pastikan `TOPPAYMENT_NOTIFY_URL` memakai domain production yang bisa diakses publik.
+
+Jika deploy dari GitHub, buat file key di server:
+
+```bash
+mkdir -p storage/app
+nano storage/app/toppayment_private.pem
+nano storage/app/toppayment_public.pem
+chmod 600 storage/app/toppayment_private.pem
+chmod 644 storage/app/toppayment_public.pem
+```
+
+Lalu clear cache config:
+
+```bash
+php artisan config:clear
+php artisan config:cache
+```
 
 ## Cache Gambar
 
@@ -304,7 +323,8 @@ Wajib sebelum go-live:
 - `APP_DEBUG=false`.
 - `APP_URL` sesuai domain production.
 - Gunakan HTTPS dan `SESSION_SECURE_COOKIE=true`.
-- Jangan commit atau publish `.env`, private key, full dump transaksi/member, atau credential API.
+- Jangan commit atau publish `.env`, private key, token provider, full dump transaksi/member, atau credential API.
+- `database/ireng17_full_dump.sql` di repository harus tetap sanitized. Data user/transaksi asli hanya boleh berada di database server/backup privat.
 - Document root diarahkan ke `public` bila memungkinkan.
 - Pastikan `/clear-cache` hanya bisa diakses user level `2`.
 - Pastikan permission hanya writable untuk `storage`, `bootstrap/cache`, `public/storage`, dan `public/image-cache`.

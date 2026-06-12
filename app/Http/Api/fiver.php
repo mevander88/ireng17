@@ -14,9 +14,9 @@ class fiver
     public function __construct()
     {
         $api = Api::first();
-        $this->agen = $api?->nx_agent_code ?: 'akurat77';
-        $this->token = $api?->nx_token ?: 'd90e23be49fc8b08065acf6a0473214e';
-        $this->url  = trim((string) ($api?->nx_endpoint ?? ''));
+        $this->agen = $api?->nx_agent_code ?: (string) config('services.ggr.agent_code', '');
+        $this->token = $api?->nx_token ?: (string) config('services.ggr.agent_token', '');
+        $this->url = trim((string) ($api?->nx_endpoint ?: config('services.ggr.api_url', '')));
     }
 
     /**
@@ -271,6 +271,13 @@ class fiver
             return json_encode([
                 'status' => 0,
                 'msg' => 'Provider API endpoint belum diset. Isi API Endpoint dari halaman GGR /app/profile.',
+            ]);
+        }
+
+        if (trim((string) $this->agen) === '' || trim((string) $this->token) === '') {
+            return json_encode([
+                'status' => 0,
+                'msg' => 'Provider API agent code/token belum diset.',
             ]);
         }
 

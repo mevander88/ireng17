@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class RefferalController extends Controller
 {
@@ -22,7 +23,7 @@ class RefferalController extends Controller
             $User = User::where('ref_code', $refferal)->first();
 
 
-            if ($User && $User->ref_code > 0) {
+            if ($User && filled($User->ref_code)) {
                 return view('auth.refferal_register', compact('refferal'));
             }
 
@@ -37,6 +38,7 @@ class RefferalController extends Controller
         $request->validate([
             'name' => 'required|string|min:6|max:12|regex:/^[a-zA-Z0-9]+$/',
             'email' => 'required|email|unique:users,email',
+            'ref' => 'required|string|exists:users,ref_code',
             'password' => 'required|string|min:8|confirmed',
             'mobile_no' => 'required|string|max:20',
             'captcha' => 'required|string|max:4',
@@ -54,24 +56,31 @@ class RefferalController extends Controller
         $Url = $domain . '/referral-register?ref=' . $refferalcode;
         $extplayer = $request->name . mt_rand(100, 1000);
 
+        $SG = new fiver();
+        $act = json_decode($SG->create($extplayer));
+        if (!in_array($act->status ?? null, [1, '1', 'success', 'SUCCESS'], true)) {
+            return back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->with('error', $act->msg ?? 'Provider API gagal membuat user. Silakan coba lagi.');
+        }
 
-        $user = User::create([
-            'extplayer' => $extplayer,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'telp' => $request->mobile_no,
-            'ref_code' => $refferalcode,
-            'ref_link' => $Url,
-            'captcha' => $request->captcha,
-            'nama_rek' => $request->acc_name,
-            'bank' => $request->bank_name,
-            'no_rek' => $request->acc_no,
-            'ip_register' => $request->ip_register,
-            'token' => Str::random(7),
-        ]);
+        DB::transaction(function () use ($request, $refferalcode, $Url, $extplayer) {
+            $user = User::create([
+                'extplayer' => $extplayer,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'telp' => $request->mobile_no,
+                'ref_code' => $refferalcode,
+                'ref_link' => $Url,
+                'captcha' => $request->captcha,
+                'nama_rek' => $request->acc_name,
+                'bank' => $request->bank_name,
+                'no_rek' => $request->acc_no,
+                'ip_register' => $request->ip_register ?: request()->ip(),
+                'token' => Str::random(7),
+            ]);
 
-        if ($request->has('ref')) {
             $UserData = User::where('ref_code', $request->ref)->first();
             if ($UserData) {
                 Network::create([
@@ -81,16 +90,14 @@ class RefferalController extends Controller
                     'parent_id' => $UserData->id,
                 ]);
             }
-        }
 
-
-        $SG = new fiver();
-        $act = json_decode($SG->create($request->name));
-        if ($act->status == 'success') {
-            $saldo = new Saldo();
-            $saldo->saldo = 0;
-            $saldo->save();
-        }
+            Saldo::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'saldo' => 0,
+                'bonus' => 0,
+            ]);
+        });
 
         return redirect('/')->with('success', 'Selamat Datang di Situs Kami');
     }
@@ -113,7 +120,6 @@ class RefferalController extends Controller
     {
         $todayData = Network::where('parent_id', Auth()->user()->id)
             ->whereDate('created_at', now())
-            ->where('type', 1)
             ->orderBy('created_at', 'DESC')
             ->get();
 

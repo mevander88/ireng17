@@ -54,9 +54,11 @@ use App\Http\Controllers\SitemapController;
 |
 */
 
-Route::post('/validate-voucher', [SpinController::class, 'validateVoucher']);
 Route::get('/spin', [SpinController::class, 'index']);
-Route::POST('/save-prize', [SpinController::class, 'spinPrize']);
+Route::middleware(['auth', 'throttle:10,1'])->group(function () {
+    Route::post('/validate-voucher', [SpinController::class, 'validateVoucher']);
+    Route::post('/save-prize', [SpinController::class, 'spinPrize']);
+});
 
 #region user ( no login allowed )
 
@@ -105,7 +107,7 @@ Route::redirect('/refferal', '/register');
 
 Route::get('/username_phone', [GgrSiteController::class, 'usernamePhone']);
 Route::get('/admins', [AdminLoginController::class, 'index']);
-Route::POST('/admins/login', [AdminLoginController::class, 'auth'])->name('admin.login');
+Route::post('/admins/login', [AdminLoginController::class, 'auth'])->middleware('throttle:5,1')->name('admin.login');
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'admin'], function () {
         Route::get('/get-balance', [BackofficeController::class, 'agentbalance']);
@@ -168,7 +170,6 @@ Route::get('/history-play/user', [HistoryPlayController::class, 'showForm'])
             Route::resource('/game_setting', GameSettingController::class)->only(['index', 'update']);
             Route::resource('/game_api', GameAPIController::class)->only(['index']);
             Route::get('/add-games', [AddGameController::class, 'index']);
-            Route::delete('/delete-games', [AddGameController::class, 'deleteGames']);
             Route::get('/game_setting_lock', [GameSettingController::class, 'lock']);
             Route::get('/game_setting_unlock', [GameSettingController::class, 'unlock']);
 

@@ -68,7 +68,7 @@
             : asset('assets/images/logo.png');
         $popupMedia = !empty($setting->popup) ? asset('storage/' . $setting->popup) : $siteLogo;
         $popupExtension = !empty($setting->popup) ? strtolower(pathinfo($setting->popup, PATHINFO_EXTENSION)) : null;
-        $popupMessage = trim((string) ($setting->msg_popup ?? ''));
+        $popupMessage = \App\Support\SafeHtml::popup($setting->msg_popup ?? '');
         $popupBackground = $setting->popup_bg ?: '#111111';
         $popupEnabled = (int) ($setting->popup_enabled ?? 1) === 1;
         $popupTitle = trim((string) ($setting->popup_title ?? '')) ?: strtoupper($brandName);
